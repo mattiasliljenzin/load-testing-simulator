@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Timers;
+using simulation.Statistics;
 
 namespace simulation
 {
@@ -22,12 +23,12 @@ namespace simulation
         {
             _startDate = startDate;
 
-            _timer = new System.Timers.Timer(_loadStrategy.InitialInterval);
+            _timer = new Timer(_loadStrategy.InitialInterval);
             _timer.AutoReset = true;
             _timer.Elapsed += Elapsed;
             _timer.Start();
 
-            System.Console.WriteLine("[Simulation]: Started!");
+            Console.WriteLine("[Simulation]: Started!");
         }
 
         public void Stop()
@@ -35,23 +36,28 @@ namespace simulation
             _timer.Stop();
             var elapsed = DateTime.UtcNow.Subtract(_startDate);
 
-            System.Console.WriteLine($"[Simulation]: Stopped!");
-            System.Console.WriteLine($"[Simulation]: Duration was {elapsed.Seconds} seconds ({_counter + 1} simulated)");
+            Console.WriteLine($"[Simulation]: Stopped!");
+            Console.WriteLine($"[Simulation]: Duration was {elapsed.Seconds} seconds ({_counter + 1} simulated)");
+            Console.WriteLine($"[Simulation]: Requests executed: {SimulationTelemetry.Instance.RequestCount}");
+			Console.WriteLine(" ");
+			Console.WriteLine(" ");
+			Console.WriteLine("=== Simulation Report ===");
+            SimulationTelemetry.Instance.PrintReport();
         }
 
         private void Elapsed(object sender, ElapsedEventArgs e)
         {
             var simulatedDate = _startDate.AddSeconds(++_counter).Normalize();
-            
-            System.Console.WriteLine($" ");
-            System.Console.WriteLine($"[Simulation]: {simulatedDate}");
-            
+
+            Console.WriteLine($" ");
+            Console.WriteLine($"[Simulation]: {simulatedDate}");
+
             Publish(simulatedDate);
 
             var currentInterval = _timer.Interval;
             var updatedInteval = _loadStrategy.GetInterval(currentInterval);
 
-            if (currentInterval != updatedInteval) 
+            if (currentInterval != updatedInteval)
             {
                 _timer.Interval = updatedInteval;
             }
@@ -64,7 +70,7 @@ namespace simulation
 
         public void Subscribe(ISimulationSubscriber subscriber)
         {
-            System.Console.WriteLine($"[Simulation]: Adding subscriber: {subscriber.GetType().Name}");
+            Console.WriteLine($"[Simulation]: Adding subscriber: {subscriber.GetType().Name}");
             _subscribers.Add(subscriber);
         }
     }

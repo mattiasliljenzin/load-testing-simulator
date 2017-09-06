@@ -59,6 +59,8 @@ namespace simulation
                 }
 
                 var simulatedRequest = SimulatedRequest.Create(new Uri(request.url), Method.GET, timestamp);
+                simulatedRequest.Endpoint = request.operation_Name;
+
                 result[timestamp].Add(simulatedRequest);
             }
 

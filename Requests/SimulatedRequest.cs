@@ -34,6 +34,7 @@ namespace simulation
         public Method Method { get; set; }
         public Uri Uri { get; set; }
         public DateTime Created { get; set; }
+        public string Endpoint { get; set; }
 
         public override string ToString() => $"[SimulatedRequest]: {Method}: {Uri.Host}{Uri.PathAndQuery} - {Created}";
     }

@@ -7,7 +7,8 @@ namespace simulation
         Method Method { get; set; }
         DateTime Created { get; set; }
         Uri Uri { get; set; }
-    }
+		string Endpoint { get; set; }
+	}
 }
 
 

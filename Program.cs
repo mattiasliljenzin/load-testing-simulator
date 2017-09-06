@@ -24,7 +24,7 @@ namespace simulation
             var settings = new ApplicationInsightsConfiguration(appId, appKey);
             
             var requestSourceService = new ApplicationInsightsRequestSourceService(settings);
-            var requestExecutor = new ConsoleRequestExecutor();
+            var requestExecutor = new RequestExecutor();
             var requestScheduler = new RequestScheduler(requestSourceService, requestExecutor);
 
             var populateTask = requestScheduler.PopulateRequestsAsync(from, to);
