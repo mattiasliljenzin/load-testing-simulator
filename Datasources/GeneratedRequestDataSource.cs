@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace simulation
 {
-    public class HardCodedRequestSourceService : IRequestSourceService
+    public class GeneratedRequestDataSource : IRequestDataSource
     {
         private readonly int _numberOfRequestsToGenerate;
         private static readonly Random _random = new Random();
 
 
-        public HardCodedRequestSourceService(int numberOfRequestsToGenerate = 25)
+        public GeneratedRequestDataSource(int numberOfRequestsToGenerate = 25)
         {
             _numberOfRequestsToGenerate = numberOfRequestsToGenerate;
         }

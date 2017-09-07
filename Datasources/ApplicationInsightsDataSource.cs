@@ -9,11 +9,11 @@ using Newtonsoft.Json.Linq;
 
 namespace simulation
 {
-    public class ApplicationInsightsRequestSourceService : IRequestSourceService
+    public class ApplicationInsightsDataSource : IRequestDataSource
     {
         private readonly ApplicationInsightsConfiguration _configuration;
 
-        public ApplicationInsightsRequestSourceService(ApplicationInsightsConfiguration configuration)
+        public ApplicationInsightsDataSource(ApplicationInsightsConfiguration configuration)
         {
             _configuration = configuration;
         }

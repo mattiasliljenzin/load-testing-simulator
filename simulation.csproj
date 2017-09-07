@@ -6,8 +6,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Loadstrategies\" />
-    <Folder Include="PubSub\" />
-    <Folder Include="Datasource\" />
+    <Folder Include="Executing\" />
+    <Folder Include="Datasources\" />
     <Folder Include="Extensions\" />
     <Folder Include="Requests\" />
     <Folder Include="Statistics\" />

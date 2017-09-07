@@ -6,11 +6,11 @@ namespace simulation
 {
     public class RequestScheduler : ISimulationSubscriber
     {
-        private IRequestSourceService _requestSourceService;
+        private IRequestDataSource _requestSourceService;
         private IDictionary<DateTime, IList<ISimulatedRequest>> _simulatedRequests;
         readonly IRequestExecutor _requestExecutor;
 
-        public RequestScheduler(IRequestSourceService requestSourceService, IRequestExecutor requestExecutor)
+        public RequestScheduler(IRequestDataSource requestSourceService, IRequestExecutor requestExecutor)
         {
             _requestExecutor = requestExecutor;
             _requestSourceService = requestSourceService;

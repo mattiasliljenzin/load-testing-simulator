@@ -23,7 +23,7 @@ namespace simulation
             var appKey = configuration["appKey"];
             var settings = new ApplicationInsightsConfiguration(appId, appKey);
             
-            var requestSourceService = new ApplicationInsightsRequestSourceService(settings);
+            var requestSourceService = new ApplicationInsightsDataSource(settings);
             var requestExecutor = new RequestExecutor();
             var requestScheduler = new RequestScheduler(requestSourceService, requestExecutor);
             //var test = new ConsoleSimulationSubscriber("test-run");
