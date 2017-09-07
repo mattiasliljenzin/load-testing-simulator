@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConsoleTables;
 using Stats = MathNet.Numerics.Statistics.Statistics;
@@ -20,7 +21,7 @@ namespace simulation.Statistics
             var original = _data.Select(x => (double)x.Elapsed).ToList();
             var noOutliers = FilterOutliers(original);
 
-            PrintReport(original, noOutliers);
+            PrintReport(_data, original, noOutliers);
         }
 
         private IEnumerable<double> FilterOutliers(IEnumerable<double> data)
@@ -35,21 +36,38 @@ namespace simulation.Statistics
             return data.Where(x => x >= outlierLow && x <= outlierHigh).ToList();
         }
 
-        private void PrintReport(IEnumerable<double> data, IEnumerable<double> withoutOutliers)
+        private void PrintReport(List<RequestData> requests, IEnumerable<double> data, IEnumerable<double> withoutOutliers)
         {
             var table = new ConsoleTable("title", "original", "no outliers");
-            table.AddRow("Maximum", Stats.Maximum(data), Stats.Maximum(withoutOutliers));
-            table.AddRow("Minimum", Stats.Minimum(data), Stats.Minimum(withoutOutliers));
-            table.AddRow("Mean", Stats.Mean(data), Stats.Mean(withoutOutliers));
-            table.AddRow("Median", Stats.Median(data), Stats.Median(withoutOutliers));
-            table.AddRow("Variance", Stats.Variance(data), Stats.Variance(withoutOutliers));
-            table.AddRow("StandardDeviation", Stats.StandardDeviation(data), Stats.StandardDeviation(withoutOutliers));
-            table.AddRow("Percentile 90", Stats.Percentile(data, 90), Stats.Percentile(withoutOutliers, 90));
-            table.AddRow("Percentile 95", Stats.Percentile(data, 95), Stats.Percentile(withoutOutliers, 95));
-            table.AddRow("Percentile 99", Stats.Percentile(data, 99), Stats.Percentile(withoutOutliers, 99));
+			table.AddRow("Maximum", Stats.Maximum(data).Round(), Stats.Maximum(withoutOutliers).Round());
+			table.AddRow("Minimum", Stats.Minimum(data).Round(), Stats.Minimum(withoutOutliers).Round());
+			table.AddRow("Mean", Stats.Mean(data).Round(), Stats.Mean(withoutOutliers).Round());
+			table.AddRow("Median", Stats.Median(data).Round(), Stats.Median(withoutOutliers).Round());
+			table.AddRow("Variance", Stats.Variance(data).Round(), Stats.Variance(withoutOutliers).Round());
+			table.AddRow("StandardDeviation", Stats.StandardDeviation(data).Round(), Stats.StandardDeviation(withoutOutliers).Round());
+			table.AddRow("Percentile 90", Stats.Percentile(data, 90).Round(), Stats.Percentile(withoutOutliers, 90).Round());
+			table.AddRow("Percentile 95", Stats.Percentile(data, 95).Round(), Stats.Percentile(withoutOutliers, 95).Round());
+			table.AddRow("Percentile 99", Stats.Percentile(data, 99).Round(), Stats.Percentile(withoutOutliers, 99).Round());
+			table.Write(Format.MarkDown);
 
-            table.Write();
+            var statusCodeStats = requests.OrderBy(x => x.StatusCode)
+                                          .GroupBy(x => x.StatusCode)
+                                          .Select(x => new
+                                          {
+                                              StatusCode = x.First().StatusCode,
+                                              Count = x.Count(),
+                                              Average = Stats.Mean(x.Select(m => ((double)m.Elapsed))).Round()
+                                          });
+
+			var statusCodeTable = new ConsoleTable("status code", "count", "avg ms");
+			foreach (var statusCodeStat in statusCodeStats)
+            {
+                statusCodeTable.AddRow(statusCodeStat.StatusCode, statusCodeStat.Count, statusCodeStat.Average);
+            }
+            statusCodeTable.Write(Format.MarkDown);
         }
+
+
 
         public long RequestCount => _data.Count;
 

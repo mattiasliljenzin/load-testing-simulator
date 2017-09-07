@@ -10,7 +10,7 @@ namespace simulation
     {
         static void Main(string[] args)
         {
-			var from = DateTime.UtcNow.AddHours(-4);
+			var from = DateTime.UtcNow.AddHours(-1);
 			var to = DateTime.UtcNow;
 
 			var configuration = new ConfigurationBuilder()
@@ -26,11 +26,12 @@ namespace simulation
             var requestSourceService = new ApplicationInsightsRequestSourceService(settings);
             var requestExecutor = new RequestExecutor();
             var requestScheduler = new RequestScheduler(requestSourceService, requestExecutor);
+            //var test = new ConsoleSimulationSubscriber("test-run");
 
             var populateTask = requestScheduler.PopulateRequestsAsync(from, to);
             populateTask.Wait();
 
-            var constantStrategy = new ConstantLoadStrategy(2);
+            var constantStrategy = new ConstantLoadStrategy(1);
             var exponentialStrategy = new ExponentialLoadStrategy();
             var doubleGrowthStrategy = new DoubleGrowthLoadStrategy();
 
@@ -40,9 +41,7 @@ namespace simulation
             var simulation = new Simulation(strategy);
             simulation.Subscribe(requestScheduler);
 
-            simulation.Start(from);
-            Task.Delay(30000).Wait();
-            simulation.Stop();
+            simulation.RunSimulation(from, to);
 
             System.Console.WriteLine(" ");
             System.Console.WriteLine("Good-bye world!");

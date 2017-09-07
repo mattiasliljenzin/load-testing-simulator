@@ -13,7 +13,7 @@ namespace simulation
 
         public Task OnPublish(DateTime simulatedDate)
         {
-            Console.WriteLine($"[{_name}]Console simulator received: {simulatedDate.ToString()}");
+            //Console.WriteLine($"[{_name}]Console simulator received: {simulatedDate.ToString()}");
             return Task.CompletedTask;
         }
     }
