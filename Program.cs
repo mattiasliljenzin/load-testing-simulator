@@ -23,9 +23,9 @@ namespace simulation
             var appKey = configuration["appKey"];
             var settings = new ApplicationInsightsConfiguration(appId, appKey);
             
-            var requestSourceService = new ApplicationInsightsDataSource(settings);
+            var requestDataSource = new ApplicationInsightsDataSource(settings);
             var requestExecutor = new RequestExecutor();
-            var requestScheduler = new RequestScheduler(requestSourceService, requestExecutor);
+            var requestScheduler = new RequestScheduler(requestDataSource, requestExecutor);
             //var test = new ConsoleSimulationSubscriber("test-run");
 
             var populateTask = requestScheduler.PopulateRequestsAsync(from, to);
