@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RequestSimulation.Requests;
 
-namespace simulation
+namespace RequestSimulation.Datasources
 {
     public interface IRequestDataSource
     {

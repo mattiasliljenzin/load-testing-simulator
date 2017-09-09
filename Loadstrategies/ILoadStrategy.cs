@@ -1,6 +1,4 @@
-using System.Timers;
-
-namespace simulation
+namespace RequestSimulation.Loadstrategies
 {
     public interface ILoadStrategy
     {

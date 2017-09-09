@@ -1,13 +1,10 @@
-using System;
-using System.Timers;
-
-namespace simulation
+namespace RequestSimulation.Loadstrategies
 {
     public class ConstantLoadStrategy : ILoadStrategy
     {
         private readonly int _multiplier;
 
-        public ConstantLoadStrategy(int multiplier)
+        public ConstantLoadStrategy(int multiplier = 1)
         {
             _multiplier = multiplier;
         }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace simulation
+namespace RequestSimulation.Requests
 {
     public static class ApplicationInsightsRequestBuilder
     {

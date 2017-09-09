@@ -1,18 +1,18 @@
 using System;
 
-namespace simulation
+namespace RequestSimulation.Requests
 {
     public class SimulatedRequest : ISimulatedRequest
     {
         public static ISimulatedRequest Create(string host, string path, string query, Method method, DateTime created)
         {
-            var builder = new UriBuilder()
+            var builder = new UriBuilder
             {
                 Host = host,
                 Path = path,
                 Query = query
             };
-            return new SimulatedRequest()
+            return new SimulatedRequest
             {
                 Method = method,
                 Created = created,
@@ -22,7 +22,7 @@ namespace simulation
 
 		public static ISimulatedRequest Create(Uri uri, Method method, DateTime created)
 		{
-			return new SimulatedRequest()
+			return new SimulatedRequest
 			{
 				Uri = uri,
 				Method = method,

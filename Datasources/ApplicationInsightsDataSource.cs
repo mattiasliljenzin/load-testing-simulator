@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
 using Newtonsoft.Json.Linq;
+using RequestSimulation.Extensions;
+using RequestSimulation.Requests;
 
-namespace simulation
+namespace RequestSimulation.Datasources
 {
     public class ApplicationInsightsDataSource : IRequestDataSource
     {
@@ -24,7 +26,7 @@ namespace simulation
             var appKey = _configuration.AppKey;
             var query = BuildQuery(from, to);
 
-            var builder = new UriBuilder()
+            var builder = new UriBuilder
             {
                 Scheme = Uri.UriSchemeHttps,
                 Host = "api.applicationinsights.io",
@@ -36,8 +38,8 @@ namespace simulation
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("x-api-key", appKey);
 
-            System.Console.WriteLine($"[ApplicationInsightsRequestSourceService]: Building request '{builder.ToString()}'");
-            System.Console.WriteLine($"[ApplicationInsightsRequestSourceService]: Querying items...");
+            Console.WriteLine($"[ApplicationInsightsRequestSourceService]: Building request '{builder}'");
+            Console.WriteLine($"[ApplicationInsightsRequestSourceService]: Querying items...");
             
             var content = await client.GetStringAsync(builder.ToString());
             
@@ -46,8 +48,8 @@ namespace simulation
             var rows = (JArray)JObject.Parse(content)["Tables"][0]["Rows"];
             var requests = rows.Select(x => ApplicationInsightsRequestBuilder.Create((JArray)x)).ToArray();
 
-			System.Console.WriteLine($"[ApplicationInsightsRequestSourceService]: {content.Length} bytes received");
-            System.Console.WriteLine($"[ApplicationInsightsRequestSourceService]: {requests.Length} requests generated");
+			Console.WriteLine($"[ApplicationInsightsRequestSourceService]: {content.Length} bytes received");
+            Console.WriteLine($"[ApplicationInsightsRequestSourceService]: {requests.Length} requests generated");
 
 			var result = new Dictionary<DateTime, IList<ISimulatedRequest>>();
 
@@ -74,23 +76,7 @@ namespace simulation
             | where name startswith ""GET ""
             | order by timestamp asc";
 
-            return System.Web.HttpUtility.UrlEncode(query);
+            return HttpUtility.UrlEncode(query);
         }
-    }
-
-    public class ApplicationInsightsConfiguration
-    {
-        private readonly string _appId;
-        private readonly string _appKey;
-
-        public ApplicationInsightsConfiguration(string appId, string appKey)
-        {
-            _appKey = appKey;
-            _appId = appId;
-        }
-
-        public string AppId => _appId;
-
-        public string AppKey => _appKey;
     }
 }

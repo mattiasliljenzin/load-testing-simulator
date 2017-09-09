@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
-using simulation.Statistics;
+using RequestSimulation.Requests;
+using RequestSimulation.Statistics;
 
-namespace simulation
+namespace RequestSimulation.Executing
 {
     public class RequestExecutor : IRequestExecutor
     {
@@ -12,7 +13,7 @@ namespace simulation
 
         public async Task Execute(ISimulatedRequest request)
         {
-			Console.WriteLine($"Executing: {request.Uri.ToString()}");
+			Console.WriteLine($"Executing: {request.Uri}");
 
 			var timer = new Stopwatch();
 			timer.Start();
@@ -21,7 +22,7 @@ namespace simulation
 
 			timer.Stop();
 
-			var metric = new RequestData()
+			var metric = new RequestData
 			{
 				Elapsed = timer.ElapsedMilliseconds,
 				Endpoint = request.Endpoint,

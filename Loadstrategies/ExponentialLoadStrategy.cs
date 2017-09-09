@@ -1,6 +1,6 @@
 using System;
 
-namespace simulation
+namespace RequestSimulation.Loadstrategies
 {
 
     public class ExponentialLoadStrategy : BaseLoadStrategy

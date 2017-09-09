@@ -1,4 +1,4 @@
-namespace simulation
+namespace RequestSimulation
 {
     public static class Constants
 	{

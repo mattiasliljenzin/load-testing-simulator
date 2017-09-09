@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace simulation.Statistics
+﻿namespace RequestSimulation.Statistics
 {
     public class RequestData
     {

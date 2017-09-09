@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RequestSimulation.Datasources;
+using RequestSimulation.Requests;
 
-namespace simulation
+namespace RequestSimulation.Executing
 {
-    public class RequestScheduler : ISimulationSubscriber
+    public class RequestMediator : ISimulationSubscriber
     {
-        private IRequestDataSource _requestSourceService;
+        private readonly IRequestDataSource _requestSourceService;
         private IDictionary<DateTime, IList<ISimulatedRequest>> _simulatedRequests;
         readonly IRequestExecutor _requestExecutor;
 
-        public RequestScheduler(IRequestDataSource requestSourceService, IRequestExecutor requestExecutor)
+        public RequestMediator(IRequestDataSource requestSourceService, IRequestExecutor requestExecutor)
         {
             _requestExecutor = requestExecutor;
             _requestSourceService = requestSourceService;
@@ -27,7 +29,7 @@ namespace simulation
                 _simulatedRequests[simulatedDate] :
                 new ISimulatedRequest[0];
 
-            System.Console.WriteLine($"[RequestScheduler]: Found {matchingRequests?.Count} matching requests for {simulatedDate}");
+            Console.WriteLine($"[RequestMediator]: Found {matchingRequests.Count} matching requests for {simulatedDate}");
 
             foreach (var request in matchingRequests)
             {

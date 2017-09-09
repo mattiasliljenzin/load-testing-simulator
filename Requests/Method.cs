@@ -1,4 +1,4 @@
-namespace simulation
+namespace RequestSimulation.Requests
 {
     public enum Method
     {

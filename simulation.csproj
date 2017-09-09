@@ -3,16 +3,17 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>RequestSimulation</AssemblyName>
+    <RootNamespace>RequestSimulation</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Loadstrategies\" />
-    <Folder Include="Executing\" />
-    <Folder Include="Datasources\" />
     <Folder Include="Extensions\" />
     <Folder Include="Requests\" />
     <Folder Include="Statistics\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.0.0" />

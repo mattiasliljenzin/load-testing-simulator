@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Timers;
-using simulation.Statistics;
+using RequestSimulation.Executing;
+using RequestSimulation.Extensions;
+using RequestSimulation.Loadstrategies;
+using RequestSimulation.Statistics;
 
-namespace simulation
+namespace RequestSimulation
 {
     public class Simulation
     {
-        private long _counter = 0;
+        private long _counter;
         private DateTime _startDate;
 		private DateTime _endDate;
 		private bool _simulationComplete;
@@ -27,8 +29,7 @@ namespace simulation
             _startDate = startDate;
             _endDate = endDate;
 
-            _timer = new Timer(_loadStrategy.InitialInterval);
-            _timer.AutoReset = true;
+            _timer = new Timer(_loadStrategy.InitialInterval) {AutoReset = true};
             _timer.Elapsed += Elapsed;
             _timer.Start();
 
@@ -36,7 +37,15 @@ namespace simulation
             Console.WriteLine($"[Simulation]: Load strategy: {_loadStrategy.GetType().Name}!");
 
 
-            while (_simulationComplete == false){} 
+            while (_simulationComplete == false)
+            {
+                // wait for it..
+            } 
+        }
+
+        public void SetLoadStrategyEffectRate(double alpha)
+        {
+            _loadStrategy.SetEffectRate(alpha);
         }
 
         private void Stop()
@@ -48,15 +57,16 @@ namespace simulation
         private void PrintReport () 
         {
 			var elapsed = DateTime.UtcNow.Subtract(_startDate);
-
 			Console.WriteLine($"[Simulation]: Stopped!");
-			Console.WriteLine($"[Simulation]: Duration was {elapsed.Seconds} seconds ({_counter + 1} simulated)");
+            Console.WriteLine($"[Simulation]: Duration was {elapsed} seconds ({_counter + 1} simulated)");
+			Console.WriteLine($"[Simulation]: Duration was {elapsed.TotalSeconds} seconds ({_counter + 1} simulated)");
 			Console.WriteLine($"[Simulation]: Requests executed: {SimulationTelemetry.Instance.RequestCount}");
 			Console.WriteLine($"[Simulation]: Request rate was: {SimulationTelemetry.Instance.RequestCount / elapsed.Seconds}/s");
 			Console.WriteLine($"[Simulation]: Actual request rate was: {SimulationTelemetry.Instance.RequestCount / _counter}");
 			Console.WriteLine(" ");
 			Console.WriteLine(" ");
 			Console.WriteLine("=== Simulation Report ===");
+            Console.WriteLine(" ");
 			SimulationTelemetry.Instance.PrintReport();
         }
 

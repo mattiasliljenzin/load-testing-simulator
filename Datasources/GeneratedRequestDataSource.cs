@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RequestSimulation.Extensions;
+using RequestSimulation.Requests;
 
-namespace simulation
+namespace RequestSimulation.Datasources
 {
     public class GeneratedRequestDataSource : IRequestDataSource
     {
@@ -37,13 +39,13 @@ namespace simulation
 
             foreach (var request in requests)
             {
-                System.Console.WriteLine($"[HardCodedRequestSourceService]: Added request: {request.ToString()}");
+                Console.WriteLine($"[HardCodedRequestSourceService]: Added request: {request}");
             }
 
             foreach (var date in uniqueDates)
             {
                 var match = requests.Where(x => x.Created == date).ToArray();
-                System.Console.WriteLine($"[HardCodedRequestSourceService]: Added matching request count of {match.Length} for {date}");
+                Console.WriteLine($"[HardCodedRequestSourceService]: Added matching request count of {match.Length} for {date}");
 
                 result.Add(date, match);
             }

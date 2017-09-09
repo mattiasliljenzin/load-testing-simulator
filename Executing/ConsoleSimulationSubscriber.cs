@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace simulation
+namespace RequestSimulation.Executing
 {
     public class ConsoleSimulationSubscriber : ISimulationSubscriber
     {

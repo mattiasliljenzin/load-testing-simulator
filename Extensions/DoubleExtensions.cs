@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace simulation
+namespace RequestSimulation.Extensions
 {
     public static class DoubleExtensions
     {

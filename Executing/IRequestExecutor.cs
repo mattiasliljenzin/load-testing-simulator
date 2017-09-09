@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using RequestSimulation.Requests;
 
-namespace simulation
+namespace RequestSimulation.Executing
 {
     public interface IRequestExecutor
     {
