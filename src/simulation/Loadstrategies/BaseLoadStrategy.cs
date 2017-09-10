@@ -25,18 +25,16 @@ namespace RequestSimulation.Loadstrategies
             var now = DateTime.UtcNow;
             var elapsed = now.Subtract(_stepDurationStarted);
 
-            if (elapsed.TotalMilliseconds > _stepDuration)
-            {
-                _stepDurationStarted = now;
-                var currentInterval = interval;
-                var newInterval = UpdateInterval(interval);
-                var updatedInterval = currentInterval + ((newInterval - currentInterval) * _effectRate); 
+            if (elapsed.TotalMilliseconds < _stepDuration) return interval;
 
-                Console.WriteLine($"[{GetType().Name}]: Ramping up timer interval from {currentInterval} to {updatedInterval} ms (effect rate is {_effectRate * 100}%)");
+            _stepDurationStarted = now;
+            var currentInterval = interval;
+            var newInterval = UpdateInterval(interval);
+            var updatedInterval = currentInterval + ((newInterval - currentInterval) * _effectRate); 
 
-                return updatedInterval;
-            }
-            return interval;
+            Console.WriteLine($"[{GetType().Name}]: Ramping up timer interval from {currentInterval} to {updatedInterval} ms (effect rate is {_effectRate * 100}%)");
+
+            return updatedInterval;
         }
 
         public void SetEffectRate(double alpha)
