@@ -13,10 +13,7 @@ namespace RequestSimulation.Loadstrategies
 
         protected override double UpdateInterval(double currentInterval)
         {
-            var expInterval = Math.Exp(currentInterval / 1000);
-            var interval = currentInterval / 1000;
-
-            return (currentInterval / (expInterval / interval));
+            return currentInterval / _slope;
         }
     }
 }
