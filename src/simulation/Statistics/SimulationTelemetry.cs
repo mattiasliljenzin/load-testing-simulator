@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConsoleTables;
 using RequestSimulation.Extensions;
+using RequestSimulation.Requests;
 using Stats = MathNet.Numerics.Statistics.Statistics;
 
 namespace RequestSimulation.Statistics
@@ -9,6 +11,7 @@ namespace RequestSimulation.Statistics
     public class SimulationTelemetry
     {
         private static readonly List<RequestData> Data = new List<RequestData>();
+        private static readonly List<string> Exceptions = new List<string>();
 
         public void Add(RequestData data)
         {
@@ -39,6 +42,18 @@ namespace RequestSimulation.Statistics
         {
             PrintStatisticsTable(data, withoutOutliers);
             PrintStatusCodeTable(requests);
+            PrintUrlTable(requests);
+            PrintExceptions();
+        }
+
+        private void PrintExceptions()
+        {
+            var table = new ConsoleTable("message");
+            foreach (var exception in Exceptions)
+            {
+                table.AddRow(exception);
+            }
+            table.Write(Format.MarkDown);
         }
 
         private static void PrintStatusCodeTable(List<RequestData> requests)
@@ -58,6 +73,30 @@ namespace RequestSimulation.Statistics
                 statusCodeTable.AddRow(statusCodeStat.StatusCode, statusCodeStat.Count, statusCodeStat.Average);
             }
             statusCodeTable.Write(Format.MarkDown);
+        }
+
+        internal void AddException(ISimulatedRequest request, Exception ex)
+        {
+            Exceptions.Add($"{request.Uri} - {ex.Message}");
+        }
+
+        private static void PrintUrlTable(List<RequestData> requests)
+        {
+            var urls = requests.OrderBy(x => x.Url)
+                .GroupBy(x => x.Url)
+                .Select(x => new
+                {
+                    Url = x.First().Url,
+                    Count = x.Count(),
+                    Average = Stats.Mean(x.Select(m => ((double) m.Elapsed))).Round()
+                });
+
+            var urlsTable = new ConsoleTable("url", "count", "avg ms");
+            foreach (var url in urls)
+            {
+                urlsTable.AddRow(url.Url, url.Count, url.Average);
+            }
+            urlsTable.Write(Format.MarkDown);
         }
 
         private static void PrintStatisticsTable(IList<double> data, IList<double> withoutOutliers)

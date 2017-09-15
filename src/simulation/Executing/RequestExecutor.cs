@@ -13,24 +13,32 @@ namespace RequestSimulation.Executing
 
         public async Task Execute(ISimulatedRequest request)
         {
-			Console.WriteLine($"Executing: {request.Uri}");
+            try
+            {
+                Console.WriteLine($"Executing: {request.Uri}");
 
-			var timer = new Stopwatch();
-			timer.Start();
+                var timer = new Stopwatch();
+                timer.Start();
 
-			var response = await _client.GetAsync(request.Uri);
+                
+                var response = await _client.GetAsync(request.Uri);
 
-			timer.Stop();
+                timer.Stop();
 
-			var metric = new RequestData
-			{
-				Elapsed = timer.ElapsedMilliseconds,
-				Endpoint = request.Endpoint,
-				StatusCode = (int)response.StatusCode,
-				Url = request.Uri.ToString()
-			};
+                var metric = new RequestData
+                {
+                    Elapsed = timer.ElapsedMilliseconds,
+                    Endpoint = request.Endpoint,
+                    StatusCode = (int)response.StatusCode,
+                    Url = request.Uri.ToString()
+                };
 
-            SimulationTelemetry.Instance.Add(metric);
+                SimulationTelemetry.Instance.Add(metric);
+            }
+            catch (Exception ex)
+            {
+                SimulationTelemetry.Instance.AddException(request, ex);
+            }
         }
     }
 }

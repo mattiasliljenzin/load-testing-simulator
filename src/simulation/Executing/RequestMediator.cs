@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using RequestSimulation.Datasources;
 using RequestSimulation.Requests;
+using System.Linq;
+using ConsoleTables;
 
 namespace RequestSimulation.Executing
 {
@@ -21,6 +23,31 @@ namespace RequestSimulation.Executing
         public async Task PopulateRequestsAsync(DateTime from, DateTime to)
         {
             _simulatedRequests = await _requestSourceService.GetAsync(from, to);
+            PrintTopRequestsCollected(_simulatedRequests);
+        }
+
+        private void PrintTopRequestsCollected(IDictionary<DateTime, IList<ISimulatedRequest>> simulatedRequests)
+        {
+            var list = new List<ISimulatedRequest>();
+            foreach (var item in simulatedRequests.Values)
+            {
+                list.AddRange(item);
+            }
+
+            var requests = list.GroupBy(x => x.Uri).Select(x =>
+            new
+            {
+                Url = x.First().Uri,
+                Count = x.Count()
+            });
+
+            var requestTable = new ConsoleTable("url", "count");
+            foreach (var request in requests.OrderByDescending(x => x.Count).Take(10))
+            {
+                requestTable.AddRow(request.Url, request.Count);
+            }
+            requestTable.Write(Format.MarkDown);
+
         }
 
         public Task OnPublish(DateTime simulatedDate)

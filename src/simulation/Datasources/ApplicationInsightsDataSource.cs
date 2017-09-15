@@ -43,7 +43,7 @@ namespace RequestSimulation.Datasources
             
             var content = await client.GetStringAsync(builder.ToString());
             
-            //File.AppendAllText("ai-dump.txt", content);
+            //System.IO.File.AppendAllText("ai-dump.txt", content);
 
             var rows = (JArray)JObject.Parse(content)["Tables"][0]["Rows"];
             var requests = rows.Select(x => ApplicationInsightsRequestBuilder.Create((JArray)x)).ToArray();

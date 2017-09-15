@@ -13,8 +13,13 @@ namespace RequestSimulation
     {
         public async Task Run()
         {
-            var from = DateTime.UtcNow.AddHours(-1);
-            var to = DateTime.UtcNow;
+            var from = DateTime.UtcNow.AddDays(-1).AddHours(7);
+            var to = DateTime.UtcNow.AddDays(-1).AddHours(9);
+
+            Console.WriteLine(" ");
+            Console.WriteLine($"Start:\t {from.ToString()} (UTC)");
+            Console.WriteLine($"To:\t {to.ToString()} (UTC)");
+            Console.WriteLine(" ");
 
             var container = InitializeComponents();
 
@@ -23,7 +28,7 @@ namespace RequestSimulation
 
             var simulator = container.Resolve<Simulation>();
             simulator.Subscribe(mediator);
-            simulator.SetLoadStrategyEffectRate(0.75);
+            simulator.SetLoadStrategyEffectRate(1.0);
             simulator.RunSimulation(from, to);
         }
 
