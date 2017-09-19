@@ -13,8 +13,8 @@ namespace RequestSimulation
     {
         public async Task Run()
         {
-            var from = DateTime.UtcNow.AddDays(-1).AddHours(7);
-            var to = DateTime.UtcNow.AddDays(-1).AddHours(9);
+            var from = DateTime.UtcNow.AddDays(-1);
+            var to = DateTime.UtcNow;
 
             Console.WriteLine(" ");
             Console.WriteLine($"Start:\t {from.ToString()} (UTC)");
@@ -23,11 +23,11 @@ namespace RequestSimulation
 
             var container = InitializeComponents();
 
-            var mediator = container.Resolve<RequestMediator>();
-            await mediator.PopulateRequestsAsync(from, to);
+            var delegator = container.Resolve<RequestDelegator>();
+            await delegator.PopulateRequestsAsync(from, to);
 
             var simulator = container.Resolve<Simulation>();
-            simulator.Subscribe(mediator);
+            simulator.Subscribe(delegator);
             simulator.SetLoadStrategyEffectRate(1.0);
             simulator.RunSimulation(from, to);
         }
@@ -36,12 +36,12 @@ namespace RequestSimulation
         {
             var builder = new ContainerBuilder();
             builder.Register(_ => BuildConfiguration()).As<IConfiguration>();
-            builder.RegisterType<ApplicationInsightsDataSource>().As<IRequestDataSource>();
+            builder.RegisterType<ApplicationInsightsDependencyDataSource>().As<IRequestDataSource>();
             builder.RegisterType<RequestExecutor>().As<IRequestExecutor>();
             builder.RegisterType<ExponentialLoadStrategy>().As<ILoadStrategy>();
             builder.RegisterType<ApplicationInsightsConfiguration>();
             builder.RegisterType<Simulation>();
-            builder.RegisterType<RequestMediator>();
+            builder.RegisterType<RequestDelegator>();
 
             return builder.Build();
         }

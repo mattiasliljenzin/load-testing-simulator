@@ -250,3 +250,4 @@ ModelManifest.xml
 /cBookAPIS.ps1
 AcademicWork.Api.sln
 src/simulation/ai-dump.txt
+src/simulation/ai-dependency-dump.txt

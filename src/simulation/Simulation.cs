@@ -76,9 +76,8 @@ namespace RequestSimulation
 
             if (simulatedDate > _endDate)
             {
-				Console.WriteLine($"[Simulation]: Simulation reached end date");
                 Stop();
-                _simulationComplete = true;
+                SetCompleted();
                 return;
 			}
 
@@ -90,10 +89,25 @@ namespace RequestSimulation
             var currentInterval = _timer.Interval;
             var updatedInteval = _loadStrategy.GetInterval(currentInterval);
 
-            if (updatedInteval > 1 && currentInterval != updatedInteval)
+            if (ThresholdReached(updatedInteval, currentInterval))
             {
                 _timer.Interval = updatedInteval;
             }
+        }
+
+        private static bool ThresholdReached(double updatedInteval, double currentInterval)
+        {
+            const int thresholdMilliseconds = 10;
+
+            if (updatedInteval <= thresholdMilliseconds) return true;
+
+            return Math.Abs(currentInterval - updatedInteval) <= thresholdMilliseconds;
+        }
+
+        private void SetCompleted()
+        {
+            Console.WriteLine($"[Simulation]: Simulation reached end date");
+            _simulationComplete = true;
         }
 
         private void Publish(DateTime dateTime)

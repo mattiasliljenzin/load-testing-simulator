@@ -2,13 +2,14 @@ using System;
 
 namespace RequestSimulation.Requests
 {
-    public class ApplicationInsightsRequest : IMapToSimulatedRequest
+    public class ApplicationInsightsDependency : IMapToSimulatedRequest
     {
         public DateTime timestamp { get; set; }
         public string id { get; set; }
-        public string source { get; set; }
+        public string target { get; set; }
+        public string type { get; set; }
         public string name { get; set; }
-        public string url { get; set; }
+        public string data { get; set; }
         public string success { get; set; }
         public string resultCode { get; set; }
         public double duration { get; set; }
@@ -38,13 +39,11 @@ namespace RequestSimulation.Requests
         public string appName { get; set; }
         public string iKey { get; set; }
         public string sdkVersion { get; set; }
-		public string itemId { get; set; }
-		public string itemType { get; set; }
+        public string itemId { get; set; }
+        public string itemType { get; set; }
         public int itemCount { get; set; }
 
         public DateTime TimeStamp => timestamp;
-        public string Url => url;
+        public string Url => data;
     }
 }
-
-

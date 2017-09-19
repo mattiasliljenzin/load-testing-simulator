@@ -10,8 +10,7 @@ namespace RequestSimulation.Datasources
     public class GeneratedRequestDataSource : IRequestDataSource
     {
         private readonly int _numberOfRequestsToGenerate;
-        private static readonly Random _random = new Random();
-
+        private static readonly Random Random = new Random();
 
         public GeneratedRequestDataSource(int numberOfRequestsToGenerate = 25)
         {
@@ -24,13 +23,13 @@ namespace RequestSimulation.Datasources
             to = to.Normalize();
 
             var diff = to.Subtract(from).TotalMilliseconds;
-            var delta = _random.Next(1, (int)diff);
+            var delta = Random.Next(1, (int)diff);
 
-            Func<DateTime> randomizeDate = () => from.AddMilliseconds(_random.Next(1, (int)diff)).Normalize();
+            DateTime RandomizeDate() => from.AddMilliseconds(delta).Normalize();
 
             var requests = Enumerable
                 .Range(0, _numberOfRequestsToGenerate)
-                .Select(x => SimulatedRequest.Create("http://localhost", $"/test/{x}", null, Method.GET, randomizeDate()))
+                .Select(x => SimulatedRequest.Create("http://localhost", $"/test/{x}", null, "GET", RandomizeDate()))
                 .OrderBy(x => x.Created)
                 .ToList();
 
