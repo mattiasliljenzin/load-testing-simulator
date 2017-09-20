@@ -54,7 +54,7 @@ namespace RequestSimulation.Requests
 
             if (!request.data.StartsWith("http"))
             {
-                request.data = $"http://{request.target}{request.data}";
+                request.data = $"https://{request.target}{request.data}";
             }
 
             return request;
