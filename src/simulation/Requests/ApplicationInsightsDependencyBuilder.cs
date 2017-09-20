@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace RequestSimulation.Requests
@@ -7,8 +8,9 @@ namespace RequestSimulation.Requests
     {
         public static ApplicationInsightsDependency Create(JArray data)
         {
+
             var request = new ApplicationInsightsDependency();
-            
+
             request.timestamp = data[0].Value<DateTime>();
             request.id = data[1].Value<string>();
             request.target = data[2].Value<string>();
@@ -47,6 +49,13 @@ namespace RequestSimulation.Requests
             request.itemId = data[35].Value<string>();
             request.itemType = data[36].Value<string>();
             request.itemCount = data[37].Value<int>();
+
+            request.data = request.data.ToLower().Replace("get", string.Empty).Trim();
+
+            if (!request.data.StartsWith("http"))
+            {
+                request.data = $"http://{request.target}{request.data}";
+            }
 
             return request;
         }

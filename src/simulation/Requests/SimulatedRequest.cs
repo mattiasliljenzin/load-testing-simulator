@@ -32,12 +32,20 @@ namespace RequestSimulation.Requests
 
         public static ISimulatedRequest Create(IMapToSimulatedRequest request, string method = "GET")
         {
-            return new SimulatedRequest
+            try
             {
-                Uri = new Uri(request.Url),
-                Method = method,
-                Created = request.TimeStamp
-            };
+                return new SimulatedRequest
+                {
+                    Uri = new Uri(request.Url),
+                    Method = method,
+                    Created = request.TimeStamp
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
         }
 
         private SimulatedRequest() { }

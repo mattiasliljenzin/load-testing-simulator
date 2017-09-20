@@ -63,7 +63,7 @@ namespace RequestSimulation.Datasources
 
         private IMapToSimulatedRequest[] MapResult(string content)
         {
-            //System.IO.File.AppendAllText("ai-dependency-dump.txt", content);
+            //System.IO.File.AppendAllText("ai-dependency-dump2.txt", content);
 
             var rows = (JArray) JObject.Parse(content)["Tables"][0]["Rows"];
             return rows.Select(x => Map((JArray) x)).ToArray();
