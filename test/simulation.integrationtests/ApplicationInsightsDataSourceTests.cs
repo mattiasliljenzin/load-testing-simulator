@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
+using RequestSimulation.Configuration;
 using RequestSimulation.Datasources;
 using RequestSimulation.Requests;
 using Shouldly;
