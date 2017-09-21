@@ -11,7 +11,7 @@ namespace RequestSimulation.Executing
     public class RequestExecutor : IRequestExecutor
     {
         private readonly HttpClient _client = new HttpClient();
-        private Random random = new Random();
+        private readonly Random _random = new Random();
 
         public async Task Execute(ISimulatedRequest request)
         {
@@ -22,7 +22,7 @@ namespace RequestSimulation.Executing
                 var timer = new Stopwatch();
                 timer.Start();
 
-                await Task.Delay(random.Next(10, (DateTime.Now.Second * 10)));
+                await Task.Delay(_random.Next(1, 999));
                 //var response = await _client.GetAsync(request.Uri);
 
                 timer.Stop();
@@ -33,8 +33,7 @@ namespace RequestSimulation.Executing
                     Endpoint = request.Endpoint,
                     StatusCode = 200, //(int)response.StatusCode,
                     Url = request.Uri.ToString(),
-                    Created = request.Created,
-                    Timestamp = DateTime.UtcNow.Normalize()
+                    SimulatedDate = request.Created.Normalize()
                 };
 
                 SimulationTelemetry.Instance.Add(metric);

@@ -44,7 +44,7 @@ namespace RequestSimulation.Statistics
 
         private void PrintExceptions(List<string> exceptions)
         {
-            var table = new ConsoleTable("message");
+            var table = new ConsoleTable("exception");
             foreach (var exception in exceptions)
             {
                 table.AddRow(exception);
@@ -60,10 +60,11 @@ namespace RequestSimulation.Statistics
                 {
                     x.First().StatusCode,
                     Count = x.Count(),
-                    Average = Stats.Mean(x.Select(m => ((double)m.Elapsed))).Round()
+                    Average = Stats.Mean(x.Select(m => (double)m.Elapsed)).Round()
                 });
 
             var statusCodeTable = new ConsoleTable("status code", "count", "avg ms");
+
             foreach (var statusCodeStat in statusCodeStats)
             {
                 statusCodeTable.AddRow(statusCodeStat.StatusCode, statusCodeStat.Count, statusCodeStat.Average);
@@ -78,8 +79,10 @@ namespace RequestSimulation.Statistics
             var buckets = 10;
             var snapshotsCount = snapshots.Count;
             var bucketSize = (int)Math.Floor((double)snapshotsCount / buckets);
+            var duration = snapshots.Max(x => x.TimeStamp).Subtract(snapshots.Min(x => x.TimeStamp)).TotalSeconds;
 
-            var table = new ConsoleTable("bucket", "requests", "avg", "95 percentile", "avg simulated speed (X)", "progress %", "duration s");
+
+            var table = new ConsoleTable("bucket", "requests", "avg ms", "95 percentile ms", "avg simulated speed (X)", "progress %", "duration s", "duration %");
             for (var i = 0; i < buckets; i++)
             {
                 var bucket = snapshots.Skip(bucketSize * i).Take(bucketSize).ToList();
@@ -94,13 +97,17 @@ namespace RequestSimulation.Statistics
                     }
                 }
 
+                var bucketDuration = bucket.Max(x => x.TimeStamp).Subtract(bucket.Min(x => x.TimeStamp)).TotalSeconds.Round();
+
                 table.AddRow(i + 1,
                     bucket.Sum(x => x.Requests.Count),
-                    Stats.Mean(timings),
-                    Stats.Percentile(timings, 95),
-                    Stats.Mean(bucket.Select(x => x.SimulatedSpeedMultiplier)),
+                    Stats.Mean(timings).Round(),
+                    Stats.Percentile(timings, 95).Round(),
+                    Stats.Mean(bucket.Select(x => x.SimulatedSpeedMultiplier)).Round(),
                     Stats.Mean(bucket.Select(x => x.Progress)).ToString("P"),
-                    bucket.Max(x => x.Timestamp).Subtract(bucket.Min(x => x.Timestamp)).TotalSeconds);
+                    bucketDuration,
+                    (bucketDuration / duration).Round().ToString("P"));
+
             }
             table.Write(Format.MarkDown);
         }
@@ -111,17 +118,17 @@ namespace RequestSimulation.Statistics
 
             foreach (var request in requests)
             {
-                if (!requestsDictionary.ContainsKey(request.Timestamp))
+                if (!requestsDictionary.ContainsKey(request.SimulatedDate))
                 {
-                    requestsDictionary.Add(request.Timestamp, new List<RequestData>());
+                    requestsDictionary.Add(request.SimulatedDate, new List<RequestData>());
                 }
-                requestsDictionary[request.Timestamp].Add(request);
+                requestsDictionary[request.SimulatedDate].Add(request);
             }
 
             foreach (var snapshot in snapshots)
             {
-                snapshot.Requests = requestsDictionary.ContainsKey(snapshot.Timestamp)
-                    ? requestsDictionary[snapshot.Timestamp]
+                snapshot.Requests = requestsDictionary.ContainsKey(snapshot.SimulatedDate)
+                    ? requestsDictionary[snapshot.SimulatedDate]
                     : new List<RequestData>(0);
             }
         }
