@@ -23,10 +23,10 @@ namespace RequestSimulation.Executing
         public async Task PopulateRequestsAsync(DateTime from, DateTime to)
         {
             _simulatedRequests = await _requestSourceService.GetAsync(from, to);
-            PrintTopRequestsCollected(_simulatedRequests);
+            PrintTopRequestsCollectedFromDataSource(_simulatedRequests);
         }
 
-        private void PrintTopRequestsCollected(IDictionary<DateTime, IList<ISimulatedRequest>> simulatedRequests)
+        private void PrintTopRequestsCollectedFromDataSource(IDictionary<DateTime, IList<ISimulatedRequest>> simulatedRequests)
         {
             var list = new List<ISimulatedRequest>();
             foreach (var item in simulatedRequests.Values)
@@ -46,6 +46,7 @@ namespace RequestSimulation.Executing
             {
                 requestTable.AddRow(request.Url, request.Count);
             }
+            Console.WriteLine(" ");
             requestTable.Write(Format.MarkDown);
 
         }
@@ -60,7 +61,7 @@ namespace RequestSimulation.Executing
 
             foreach (var request in matchingRequests)
             {
-               // _requestExecutor.Execute(request);
+                _requestExecutor.Execute(request);
             }
 
             return Task.CompletedTask;

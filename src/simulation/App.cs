@@ -38,7 +38,7 @@ namespace RequestSimulation
             builder.Register(_ => BuildConfiguration()).As<IConfiguration>();
             builder.RegisterType<ApplicationInsightsDependencyDataSource>().As<IRequestDataSource>();
             builder.RegisterType<RequestExecutor>().As<IRequestExecutor>();
-            builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>();
+            builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.5);
             builder.RegisterType<ApplicationInsightsConfiguration>();
             builder.RegisterType<Simulation>();
             builder.RegisterType<RequestDelegator>();

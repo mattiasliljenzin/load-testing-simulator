@@ -102,8 +102,6 @@ namespace RequestSimulation
             var total = _simulatedEndDate.Subtract(_simulatedStartDate);
             var progress = (elapsed / total);
 
-            //if (Math.Abs(progress % 5) > 0.1) return;
-
             Console.WriteLine(" ");
             Console.WriteLine($"PROGRESS: {progress:P}%");
             Console.WriteLine(" ");
@@ -112,7 +110,7 @@ namespace RequestSimulation
             {
                 SimulatedSpeedMultiplier = Constants.ONE_SECOND_IN_MS / _timer.Interval,
                 Progress = progress,
-                Timestamp = DateTime.UtcNow.Normalize()
+                Timestamp = simulatedDate
             });
         }
 

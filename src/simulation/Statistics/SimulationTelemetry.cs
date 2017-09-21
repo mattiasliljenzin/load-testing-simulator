@@ -37,7 +37,8 @@ namespace RequestSimulation.Statistics
             PrintSimulationSnapshots(snapshots, requests);
             PrintStatisticsTable(original, withoutOutliers);
             PrintStatusCodeTable(requests);
-            PrintUrlTable(requests);
+            PrintUrlTableByFrequency(requests);
+            PrintUrlTableByPerformance(requests);
             PrintExceptions(exceptions);
         }
 
@@ -74,27 +75,32 @@ namespace RequestSimulation.Statistics
         {
             EnrichSnapshotsWithRequests(snapshots, requests);
 
-            var bucketSize = 10;
+            var buckets = 10;
             var snapshotsCount = snapshots.Count;
-            var iterations = Math.Ceiling((double)(snapshotsCount / bucketSize));
+            var bucketSize = (int)Math.Floor((double)snapshotsCount / buckets);
 
-            var table = new ConsoleTable("bucket", "requests", "avg", "95 percentile", "avg simulated speed (X)", "progress %");
-            for (var i = 1; i <= iterations; i++)
+            var table = new ConsoleTable("bucket", "requests", "avg", "95 percentile", "avg simulated speed (X)", "progress %", "duration s");
+            for (var i = 0; i < buckets; i++)
             {
                 var bucket = snapshots.Skip(bucketSize * i).Take(bucketSize).ToList();
                 var timings = new List<double>();
 
                 foreach (var snapshot in bucket)
                 {
-                    timings.AddRange(snapshot.Requests.Select(x => (double) x.Elapsed));
+                    var elapsed = snapshot.Requests.Select(x => (double)x.Elapsed).ToArray();
+                    if (elapsed.Any())
+                    {
+                        timings.AddRange(elapsed);
+                    }
                 }
 
-                table.AddRow(i,
-                    bucket.Sum(x => x.Requests?.Count),
+                table.AddRow(i + 1,
+                    bucket.Sum(x => x.Requests.Count),
                     Stats.Mean(timings),
                     Stats.Percentile(timings, 95),
                     Stats.Mean(bucket.Select(x => x.SimulatedSpeedMultiplier)),
-                    Stats.Mean(bucket.Select(x => x.Progress)).ToString("P"));
+                    Stats.Mean(bucket.Select(x => x.Progress)).ToString("P"),
+                    bucket.Max(x => x.Timestamp).Subtract(bucket.Min(x => x.Timestamp)).TotalSeconds);
             }
             table.Write(Format.MarkDown);
         }
@@ -114,10 +120,9 @@ namespace RequestSimulation.Statistics
 
             foreach (var snapshot in snapshots)
             {
-                if (requestsDictionary.ContainsKey(snapshot.Timestamp))
-                {
-                    snapshot.Requests = requestsDictionary[snapshot.Timestamp];
-                }
+                snapshot.Requests = requestsDictionary.ContainsKey(snapshot.Timestamp)
+                    ? requestsDictionary[snapshot.Timestamp]
+                    : new List<RequestData>(0);
             }
         }
 
@@ -138,17 +143,41 @@ namespace RequestSimulation.Statistics
             Exceptions.Add($"{request.Uri} - {ex.Message}");
         }
 
-        private static void PrintUrlTable(List<RequestData> requests)
+        private static void PrintUrlTableByFrequency(List<RequestData> requests)
         {
-            var urls = requests.OrderBy(x => x.Url)
+            var urls = requests
                 .GroupBy(x => x.Url)
                 .Select(x => new
                 {
                     Url = x.First().Url,
                     Count = x.Count(),
                     Average = Stats.Mean(x.Select(m => ((double)m.Elapsed))).Round()
-                });
+                })
+                .OrderByDescending(x => x.Count)
+                .ThenBy(x => x.Url)
+                .Take(Constants.DEFAULT_PRINT_TOP_REQUEST_COUNT);
 
+            PrintUrlTable(urls);
+        }
+
+        private static void PrintUrlTableByPerformance(List<RequestData> requests)
+        {
+            var urls = requests
+                .OrderByDescending(x => x.Elapsed)
+                .ThenBy(x => x.Url)
+                .GroupBy(x => x.Url)
+                .Select(x => new
+                {
+                    Url = x.First().Url,
+                    Count = x.Count(),
+                    Average = Stats.Mean(x.Select(m => ((double)m.Elapsed))).Round()
+                }).Take(Constants.DEFAULT_PRINT_TOP_REQUEST_COUNT);
+
+            PrintUrlTable(urls);
+        }
+
+        private static void PrintUrlTable(IEnumerable<dynamic> urls)
+        {
             var urlsTable = new ConsoleTable("url", "count", "avg ms");
             foreach (var url in urls)
             {

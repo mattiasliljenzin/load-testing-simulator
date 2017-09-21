@@ -11,6 +11,7 @@ namespace RequestSimulation.Executing
     public class RequestExecutor : IRequestExecutor
     {
         private readonly HttpClient _client = new HttpClient();
+        private Random random = new Random();
 
         public async Task Execute(ISimulatedRequest request)
         {
@@ -21,7 +22,7 @@ namespace RequestSimulation.Executing
                 var timer = new Stopwatch();
                 timer.Start();
 
-                
+                await Task.Delay(random.Next(10, (DateTime.Now.Second * 10)));
                 //var response = await _client.GetAsync(request.Uri);
 
                 timer.Stop();
