@@ -11,8 +11,9 @@ namespace RequestSimulation
     public class Simulation
     {
         private long _counter;
-        private DateTime _startDate;
-		private DateTime _endDate;
+        private DateTime _simulatedStartDate;
+		private DateTime _simulatedEndDate;
+        private DateTime _simulationStartedDate;
 		private bool _simulationComplete;
 		private Timer _timer;
 
@@ -24,10 +25,11 @@ namespace RequestSimulation
             _loadStrategy = loadStrategy;
         }
 
-        public void RunSimulation(DateTime startDate, DateTime endDate)
+        public void RunSimulation(DateTime simulatedStartDate, DateTime simulatedEndDate)
         {
-            _startDate = startDate;
-            _endDate = endDate;
+            _simulatedStartDate = simulatedStartDate;
+            _simulatedEndDate = simulatedEndDate;
+            _simulationStartedDate = DateTime.UtcNow;
 
             _timer = new Timer(_loadStrategy.InitialInterval) {AutoReset = true};
             _timer.Elapsed += Elapsed;
@@ -56,11 +58,11 @@ namespace RequestSimulation
 
         private void PrintReport () 
         {
-			var elapsed = DateTime.UtcNow.Subtract(_startDate);
+			var elapsed = DateTime.UtcNow.Subtract(_simulationStartedDate);
 			Console.WriteLine($"[Simulation]: Stopped!");
-            Console.WriteLine($"[Simulation]: Duration was {elapsed} seconds ({_counter + 1} simulated)");
-			Console.WriteLine($"[Simulation]: Duration was {elapsed.TotalSeconds} seconds ({_counter + 1} simulated)");
-			Console.WriteLine($"[Simulation]: Requests executed: {SimulationTelemetry.Instance.RequestCount}");
+			Console.WriteLine($"[Simulation]: Duration was {Math.Ceiling(elapsed.TotalSeconds)} seconds ({_counter} simulated)");
+			Console.WriteLine($"[Simulation]: Average simulation speed was {Math.Ceiling(_counter / elapsed.TotalSeconds)}X");
+            Console.WriteLine($"[Simulation]: Requests executed: {SimulationTelemetry.Instance.RequestCount}");
 			Console.WriteLine($"[Simulation]: Request rate was: {SimulationTelemetry.Instance.RequestCount / elapsed.Seconds}/s");
 			Console.WriteLine($"[Simulation]: Actual request rate was: {SimulationTelemetry.Instance.RequestCount / _counter}");
 			Console.WriteLine(" ");
@@ -72,27 +74,51 @@ namespace RequestSimulation
 
         private void Elapsed(object sender, ElapsedEventArgs e)
         {
-            var simulatedDate = _startDate.AddSeconds(++_counter).Normalize();
+            var simulatedDate = _simulatedStartDate.AddSeconds(++_counter).Normalize();
 
-            if (simulatedDate > _endDate)
+            if (simulatedDate > _simulatedEndDate)
             {
                 Stop();
                 SetCompleted();
                 return;
 			}
 
-            Console.WriteLine($" ");
-            Console.WriteLine($"[Simulation]: {simulatedDate}");
-
+            //LogTick(simulatedDate);
+            LogProgress(simulatedDate);
             Publish(simulatedDate);
 
             var currentInterval = _timer.Interval;
             var updatedInteval = _loadStrategy.GetInterval(currentInterval);
 
-            if (ThresholdReached(updatedInteval, currentInterval))
+            if (ThresholdReached(updatedInteval, currentInterval) == false)
             {
                 _timer.Interval = updatedInteval;
             }
+        }
+
+        private void LogProgress(DateTime simulatedDate)
+        {
+            var elapsed = simulatedDate.Subtract(_simulatedStartDate);
+            var total = _simulatedEndDate.Subtract(_simulatedStartDate);
+            var progress = (elapsed / total);
+
+            //if (Math.Abs(progress % 5) > 0.1) return;
+
+            Console.WriteLine(" ");
+            Console.WriteLine($"PROGRESS: {progress:P}%");
+            Console.WriteLine(" ");
+
+            SimulationTelemetry.Instance.Add(new SimulationSnapshot
+            {
+                SimulatedSpeedMultiplier = Constants.ONE_SECOND_IN_MS / _timer.Interval,
+                Progress = progress
+            });
+        }
+
+        private static void LogTick(DateTime simulatedDate)
+        {
+            Console.WriteLine($" ");
+            Console.WriteLine($"[Simulation]: {simulatedDate}");
         }
 
         private static bool ThresholdReached(double updatedInteval, double currentInterval)

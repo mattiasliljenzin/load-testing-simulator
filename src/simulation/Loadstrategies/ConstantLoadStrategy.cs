@@ -9,7 +9,7 @@ namespace RequestSimulation.Loadstrategies
             _multiplier = multiplier;
         }
 
-        public double InitialInterval => Constants.DEFAULT_INITIAL_INTERVAL_MS / _multiplier;
+        public double InitialInterval => Constants.ONE_SECOND_IN_MS / _multiplier;
 
         public double GetInterval(double interval)
         {

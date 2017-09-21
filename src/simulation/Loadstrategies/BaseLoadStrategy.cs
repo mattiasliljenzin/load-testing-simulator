@@ -13,7 +13,7 @@ namespace RequestSimulation.Loadstrategies
             _stepDuration = stepDuration;
         }
 
-        public double InitialInterval => Constants.DEFAULT_INITIAL_INTERVAL_MS;
+        public double InitialInterval => Constants.ONE_SECOND_IN_MS;
 
         public double GetInterval(double interval)
         {

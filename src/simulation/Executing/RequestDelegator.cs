@@ -56,11 +56,11 @@ namespace RequestSimulation.Executing
                 _simulatedRequests[simulatedDate] :
                 new ISimulatedRequest[0];
 
-            Console.WriteLine($"[RequestDelegator]: Found {matchingRequests.Count} matching requests for {simulatedDate}");
+            //Console.WriteLine($"[RequestDelegator]: Found {matchingRequests.Count} matching requests for {simulatedDate}");
 
             foreach (var request in matchingRequests)
             {
-                _requestExecutor.Execute(request);
+               // _requestExecutor.Execute(request);
             }
 
             return Task.CompletedTask;

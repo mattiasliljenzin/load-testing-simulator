@@ -13,7 +13,7 @@ namespace RequestSimulation
     {
         public async Task Run()
         {
-            var from = DateTime.UtcNow.AddDays(-1);
+            var from = DateTime.UtcNow.AddMinutes(-10);
             var to = DateTime.UtcNow;
 
             Console.WriteLine(" ");
@@ -38,7 +38,7 @@ namespace RequestSimulation
             builder.Register(_ => BuildConfiguration()).As<IConfiguration>();
             builder.RegisterType<ApplicationInsightsDependencyDataSource>().As<IRequestDataSource>();
             builder.RegisterType<RequestExecutor>().As<IRequestExecutor>();
-            builder.RegisterType<ExponentialLoadStrategy>().As<ILoadStrategy>();
+            builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>();
             builder.RegisterType<ApplicationInsightsConfiguration>();
             builder.RegisterType<Simulation>();
             builder.RegisterType<RequestDelegator>();

@@ -12,6 +12,4 @@ namespace RequestSimulation
             Console.WriteLine("Good-bye world!");
         }
     }
-
-    
 }

@@ -21,7 +21,7 @@ namespace RequestSimulation.Executing
                 timer.Start();
 
                 
-                var response = await _client.GetAsync(request.Uri);
+                //var response = await _client.GetAsync(request.Uri);
 
                 timer.Stop();
 
@@ -29,11 +29,13 @@ namespace RequestSimulation.Executing
                 {
                     Elapsed = timer.ElapsedMilliseconds,
                     Endpoint = request.Endpoint,
-                    StatusCode = (int)response.StatusCode,
+                    StatusCode = 200, //(int)response.StatusCode,
                     Url = request.Uri.ToString()
                 };
 
                 SimulationTelemetry.Instance.Add(metric);
+
+                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
