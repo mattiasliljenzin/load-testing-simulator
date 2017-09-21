@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
+using RequestSimulation.Extensions;
 using RequestSimulation.Requests;
 using RequestSimulation.Statistics;
 
@@ -30,7 +31,9 @@ namespace RequestSimulation.Executing
                     Elapsed = timer.ElapsedMilliseconds,
                     Endpoint = request.Endpoint,
                     StatusCode = 200, //(int)response.StatusCode,
-                    Url = request.Uri.ToString()
+                    Url = request.Uri.ToString(),
+                    Created = request.Created,
+                    Timestamp = DateTime.UtcNow.Normalize()
                 };
 
                 SimulationTelemetry.Instance.Add(metric);

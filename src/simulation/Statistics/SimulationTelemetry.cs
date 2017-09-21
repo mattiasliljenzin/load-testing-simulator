@@ -34,7 +34,7 @@ namespace RequestSimulation.Statistics
 
         private void PrintReport(List<RequestData> requests, List<double> original, IList<double> withoutOutliers, List<string> exceptions, List<SimulationSnapshot> snapshots)
         {
-            PrintSimulationSnapshots(snapshots);
+            PrintSimulationSnapshots(snapshots, requests);
             PrintStatisticsTable(original, withoutOutliers);
             PrintStatusCodeTable(requests);
             PrintUrlTable(requests);
@@ -70,19 +70,55 @@ namespace RequestSimulation.Statistics
             statusCodeTable.Write(Format.MarkDown);
         }
 
-        private static void PrintSimulationSnapshots(List<SimulationSnapshot> snapshots)
+        private static void PrintSimulationSnapshots(List<SimulationSnapshot> snapshots, List<RequestData> requests)
         {
+            EnrichSnapshotsWithRequests(snapshots, requests);
+
             var bucketSize = 10;
             var snapshotsCount = snapshots.Count;
             var iterations = Math.Ceiling((double)(snapshotsCount / bucketSize));
 
-            var table = new ConsoleTable("bucket", "req/s", "simulated speed (X)");
+            var table = new ConsoleTable("bucket", "requests", "avg", "95 percentile", "avg simulated speed (X)", "progress %");
             for (var i = 1; i <= iterations; i++)
             {
                 var bucket = snapshots.Skip(bucketSize * i).Take(bucketSize).ToList();
-                table.AddRow(i, bucket.Average(x => x.RequestPerSeconds), bucket.Average(x => x.SimulatedSpeedMultiplier));
+                var timings = new List<double>();
+
+                foreach (var snapshot in bucket)
+                {
+                    timings.AddRange(snapshot.Requests.Select(x => (double) x.Elapsed));
+                }
+
+                table.AddRow(i,
+                    bucket.Sum(x => x.Requests?.Count),
+                    Stats.Mean(timings),
+                    Stats.Percentile(timings, 95),
+                    Stats.Mean(bucket.Select(x => x.SimulatedSpeedMultiplier)),
+                    Stats.Mean(bucket.Select(x => x.Progress)).ToString("P"));
             }
             table.Write(Format.MarkDown);
+        }
+
+        private static void EnrichSnapshotsWithRequests(List<SimulationSnapshot> snapshots, List<RequestData> requests)
+        {
+            var requestsDictionary = new Dictionary<DateTime, List<RequestData>>();
+
+            foreach (var request in requests)
+            {
+                if (!requestsDictionary.ContainsKey(request.Timestamp))
+                {
+                    requestsDictionary.Add(request.Timestamp, new List<RequestData>());
+                }
+                requestsDictionary[request.Timestamp].Add(request);
+            }
+
+            foreach (var snapshot in snapshots)
+            {
+                if (requestsDictionary.ContainsKey(snapshot.Timestamp))
+                {
+                    snapshot.Requests = requestsDictionary[snapshot.Timestamp];
+                }
+            }
         }
 
         private IList<double> FilterOutliers(IList<double> data)

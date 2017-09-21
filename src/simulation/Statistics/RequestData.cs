@@ -1,4 +1,6 @@
-﻿namespace RequestSimulation.Statistics
+﻿using System;
+
+namespace RequestSimulation.Statistics
 {
     public class RequestData
     {
@@ -6,5 +8,7 @@
         public string Url { get; set; }
         public string Endpoint { get; set; }
         public int StatusCode { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }

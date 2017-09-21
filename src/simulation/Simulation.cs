@@ -111,7 +111,8 @@ namespace RequestSimulation
             SimulationTelemetry.Instance.Add(new SimulationSnapshot
             {
                 SimulatedSpeedMultiplier = Constants.ONE_SECOND_IN_MS / _timer.Interval,
-                Progress = progress
+                Progress = progress,
+                Timestamp = DateTime.UtcNow.Normalize()
             });
         }
 
