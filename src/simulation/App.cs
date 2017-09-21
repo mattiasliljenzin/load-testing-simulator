@@ -1,10 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using RequestSimulation.Configuration;
 using RequestSimulation.Datasources;
 using RequestSimulation.Executing;
+using RequestSimulation.Executing.Interceptors;
 using RequestSimulation.Loadstrategies;
 
 namespace RequestSimulation
@@ -36,6 +39,8 @@ namespace RequestSimulation
         {
             var builder = new ContainerBuilder();
             builder.Register(_ => BuildConfiguration()).As<IConfiguration>();
+            builder.RegisterType<AuthorizationInterceptor>().As<IHttpRequestMessageInterceptor>();
+            builder.RegisterType<ChangeHostInterceptor>().As<IHttpRequestMessageInterceptor>();
             builder.RegisterType<ApplicationInsightsDependencyDataSource>().As<IRequestDataSource>();
             builder.RegisterType<RequestExecutor>().As<IRequestExecutor>();
             builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.5);

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace RequestSimulation.Datasources
+namespace RequestSimulation.Configuration
 {
     public class ApplicationInsightsConfiguration
     {

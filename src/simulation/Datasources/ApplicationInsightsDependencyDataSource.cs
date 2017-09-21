@@ -1,6 +1,7 @@
 using System;
 using System.Web;
 using Newtonsoft.Json.Linq;
+using RequestSimulation.Configuration;
 using RequestSimulation.Requests;
 
 namespace RequestSimulation.Datasources

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
+using RequestSimulation.Executing.Interceptors;
 using RequestSimulation.Extensions;
 using RequestSimulation.Requests;
 using RequestSimulation.Statistics;
@@ -10,35 +11,45 @@ namespace RequestSimulation.Executing
 {
     public class RequestExecutor : IRequestExecutor
     {
+        private readonly IHttpRequestMessageInterceptor[] _interceptors;
         private readonly HttpClient _client = new HttpClient();
-        private readonly Random _random = new Random();
+        private Random random = new Random();
+
+        public RequestExecutor(IHttpRequestMessageInterceptor[] interceptors)
+        {
+            _interceptors = interceptors;
+        }
 
         public async Task Execute(ISimulatedRequest request)
         {
             try
             {
-                Console.WriteLine($"Executing: {request.Uri}");
+                var message = new HttpRequestMessage(HttpMethod.Get, request.Uri);
+                foreach (var interceptor in _interceptors)
+                {
+                    interceptor.Intercept(message);
+                }
 
+                Console.WriteLine($"Executing: {message.RequestUri}");
                 var timer = new Stopwatch();
                 timer.Start();
 
-                await Task.Delay(_random.Next(1, 999));
-                //var response = await _client.GetAsync(request.Uri);
+                //var response = await _client.SendAsync(message);
+
+                await Task.Delay(random.Next(100, 1000));
 
                 timer.Stop();
 
                 var metric = new RequestData
                 {
                     Elapsed = timer.ElapsedMilliseconds,
-                    Endpoint = request.Endpoint,
-                    StatusCode = 200, //(int)response.StatusCode,
-                    Url = request.Uri.ToString(),
+                    Endpoint = message.RequestUri.Host,
+                    StatusCode = 200, //(int) response.StatusCode,
+                    Url = message.RequestUri.ToString(),
                     SimulatedDate = request.Created.Normalize()
                 };
 
                 SimulationTelemetry.Instance.Add(metric);
-
-                await Task.CompletedTask;
             }
             catch (Exception ex)
             {

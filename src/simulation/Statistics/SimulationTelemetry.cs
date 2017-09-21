@@ -37,8 +37,10 @@ namespace RequestSimulation.Statistics
             PrintSimulationSnapshots(snapshots, requests);
             PrintStatisticsTable(original, withoutOutliers);
             PrintStatusCodeTable(requests);
-            PrintUrlTableByFrequency(requests);
-            PrintUrlTableByPerformance(requests);
+            PrintUrlTableByUrlFrequency(requests);
+            PrintUrlTableByEndpointFrequency(requests);
+            PrintUrlTableByUrlPerformance(requests);
+            PrintUrlTableByEndpointPerformance(requests);
             PrintExceptions(exceptions);
         }
 
@@ -150,7 +152,7 @@ namespace RequestSimulation.Statistics
             Exceptions.Add($"{request.Uri} - {ex.Message}");
         }
 
-        private static void PrintUrlTableByFrequency(List<RequestData> requests)
+        private static void PrintUrlTableByUrlFrequency(List<RequestData> requests)
         {
             var urls = requests
                 .GroupBy(x => x.Url)
@@ -164,10 +166,27 @@ namespace RequestSimulation.Statistics
                 .ThenBy(x => x.Url)
                 .Take(Constants.DEFAULT_PRINT_TOP_REQUEST_COUNT);
 
-            PrintUrlTable(urls);
+            PrintUrlTable("request count by url", urls);
         }
 
-        private static void PrintUrlTableByPerformance(List<RequestData> requests)
+        private static void PrintUrlTableByEndpointFrequency(List<RequestData> requests)
+        {
+            var urls = requests
+                .GroupBy(x => x.Endpoint)
+                .Select(x => new
+                {
+                    Url = x.First().Endpoint,
+                    Count = x.Count(),
+                    Average = Stats.Mean(x.Select(m => ((double)m.Elapsed))).Round()
+                })
+                .OrderByDescending(x => x.Count)
+                .ThenBy(x => x.Url)
+                .Take(Constants.DEFAULT_PRINT_TOP_REQUEST_COUNT);
+
+            PrintUrlTable("request count by endpoint", urls);
+        }
+
+        private static void PrintUrlTableByUrlPerformance(List<RequestData> requests)
         {
             var urls = requests
                 .OrderByDescending(x => x.Elapsed)
@@ -180,12 +199,28 @@ namespace RequestSimulation.Statistics
                     Average = Stats.Mean(x.Select(m => ((double)m.Elapsed))).Round()
                 }).Take(Constants.DEFAULT_PRINT_TOP_REQUEST_COUNT);
 
-            PrintUrlTable(urls);
+            PrintUrlTable("performance by url", urls);
         }
 
-        private static void PrintUrlTable(IEnumerable<dynamic> urls)
+        private static void PrintUrlTableByEndpointPerformance(List<RequestData> requests)
         {
-            var urlsTable = new ConsoleTable("url", "count", "avg ms");
+            var urls = requests
+                .OrderByDescending(x => x.Elapsed)
+                .ThenBy(x => x.Endpoint)
+                .GroupBy(x => x.Endpoint)
+                .Select(x => new
+                {
+                    Url = x.First().Endpoint,
+                    Count = x.Count(),
+                    Average = Stats.Mean(x.Select(m => ((double)m.Elapsed))).Round()
+                }).Take(Constants.DEFAULT_PRINT_TOP_REQUEST_COUNT);
+
+            PrintUrlTable("performance by endpoint", urls);
+        }
+
+        private static void PrintUrlTable(string title, IEnumerable<dynamic> urls)
+        {
+            var urlsTable = new ConsoleTable(title, "count", "avg ms");
             foreach (var url in urls)
             {
                 urlsTable.AddRow(url.Url, url.Count, url.Average);

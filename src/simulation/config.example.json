@@ -1,4 +1,9 @@
 ﻿{
-  "appId": "DEMO_APP",
-  "appKey": "DEMO_KEY"
+    "AppId": "DEMO_APP",
+    "AppKey": "DEMO_KEY",
+    "Interceptors": {
+        "ChangeHost": {
+            "google.se": "localhost:8181" 
+        } 
+    }
 }
