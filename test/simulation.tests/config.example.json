@@ -3,11 +3,11 @@
     "AppKey": "DEMO_KEY",
     "Interceptors": {
         "ChangeHost": {
-            "google.se": "localhost:8181"
+            "www.google.com": "www.yahoo.com"
         },
         "TokenStore": {
             "Location": "https://www.google.com/api/tokens",
-            "Scheme": "Bearer" 
+            "Scheme": "Bearer"
         }
     }
 }

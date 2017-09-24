@@ -2,8 +2,8 @@
 
 namespace RequestSimulation.Executing.Interceptors
 {
-    public interface IHttpContentClient
+    public interface IContentClient
     {
-        Task<string> GetAsync(string url);
+        Task<string> GetAsync(string resource);
     }
 }

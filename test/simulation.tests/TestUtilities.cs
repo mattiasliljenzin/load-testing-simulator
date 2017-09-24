@@ -1,7 +1,7 @@
 using System.IO;
 using Microsoft.Extensions.Configuration;
 
-namespace simulation.integrationtests
+namespace simulation.tests
 {
     public static class TestUtilities
     {
@@ -9,8 +9,7 @@ namespace simulation.integrationtests
         {
             return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                //.AddJsonFile("config.example.json")
-                .AddJsonFile("config.json") 
+                .AddJsonFile("config.example.json")
                 .AddEnvironmentVariables()
                 .Build();
         }

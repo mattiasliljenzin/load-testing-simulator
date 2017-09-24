@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +8,7 @@ using RequestSimulation.Executing.Interceptors;
 using Shouldly;
 using Xunit;
 
-namespace simulation.integrationtests
+namespace simulation.tests.Interceptors
 {
     public class AuthorizationInterceptorTests
     {
@@ -36,9 +35,9 @@ namespace simulation.integrationtests
 
         }
 
-        private IHttpContentClient CreateMockedClientAsync()
+        private IContentClient CreateMockedClientAsync()
         {
-            var client = Substitute.For<IHttpContentClient>();
+            var client = Substitute.For<IContentClient>();
             client.GetAsync(null).ReturnsForAnyArgs(CreateFakeTokenResultTask);
 
             return client;

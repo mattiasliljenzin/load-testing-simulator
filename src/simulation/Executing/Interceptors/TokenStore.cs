@@ -11,10 +11,10 @@ namespace RequestSimulation.Executing.Interceptors
     public class TokenStore : ITokenStore
     {
         private readonly IConfiguration _configuration;
-        private readonly IHttpContentClient _client;
+        private readonly IContentClient _client;
         private readonly IDictionary<string, Func<AuthenticationHeaderValue>> _tokenFactory = new Dictionary<string, Func<AuthenticationHeaderValue>>();
 
-        public TokenStore(IConfiguration configuration, IHttpContentClient client)
+        public TokenStore(IConfiguration configuration, IContentClient client)
         {
             _configuration = configuration;
             _client = client;
@@ -29,7 +29,7 @@ namespace RequestSimulation.Executing.Interceptors
 
             try
             {
-                var content = await _client.GetAsync(TokenStoreEndpoint);
+                var content = await _client.GetAsync(TokenStoreLocation);
                 var tokens = JsonConvert.DeserializeObject<IEnumerable<TokenResult>>(content);
 
                 foreach (var token in tokens)
@@ -47,7 +47,7 @@ namespace RequestSimulation.Executing.Interceptors
             }
         }
 
-        private string TokenStoreEndpoint => _configuration["Interceptors:TokenStore:Endpoint"];
+        private string TokenStoreLocation => _configuration["Interceptors:TokenStore:Location"];
         private string TokenStoreScheme => _configuration["Interceptors:TokenStore:Scheme"];
     }
 }

@@ -6,8 +6,9 @@
             "google.se": "localhost:8181"
         },
         "TokenStore": {
-            "Endpoint": "https://www.google.com/api/tokens",
-            "Scheme": "Bearer" 
+            "Location": "https://www.google.com/api/tokens",
+            //"Location": "C:\\temp\\tokens.json", //(for file location)
+            "Scheme": "Bearer"
         }
     }
 }

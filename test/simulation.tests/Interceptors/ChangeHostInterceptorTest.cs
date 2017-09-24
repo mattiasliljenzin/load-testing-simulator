@@ -13,13 +13,7 @@ namespace simulation.tests.Interceptors
 {
     public class ChangeHostInterceptorTest
     {
-        private readonly IConfiguration _configuration;
-
-        public ChangeHostInterceptorTest()
-        {
-            _configuration = Substitute.For<IConfiguration>();
-            _configuration["Interceptors:ChangeHost:www.google.com"].Returns("www.yahoo.com");
-        }
+        private readonly IConfiguration _configuration = TestUtilities.BuildConfiguration();
 
         [Theory]
         [InlineData("http://www.google.com/api/search?q=test", "http://www.yahoo.com/api/search?q=test")]
