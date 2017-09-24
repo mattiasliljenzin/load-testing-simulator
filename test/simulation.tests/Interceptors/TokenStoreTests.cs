@@ -23,9 +23,10 @@ namespace simulation.tests.Interceptors
             // Arrange
             var client = CreateMockedClientAsync();
             var store = new TokenStore(_configuration, client);
+            await store.Initialize();
 
             // Act
-            var tokens = await store.GetAll();
+            var tokens = store.GetAll();
 
             // Assert
             tokens.Count.ShouldBe(3);

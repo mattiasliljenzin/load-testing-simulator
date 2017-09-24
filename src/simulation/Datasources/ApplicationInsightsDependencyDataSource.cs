@@ -18,7 +18,16 @@ namespace RequestSimulation.Datasources
             | where name startswith ""GET ""
             | order by timestamp asc";
 
+            //PrintQuery(query);
+
             return HttpUtility.UrlEncode(query);
+        }
+
+        private static void PrintQuery(string query)
+        {
+            Console.WriteLine(" ");
+            Console.WriteLine($"[ApplicationInsightsDependencyDataSource]: Query: {query}");
+            Console.WriteLine(" ");
         }
 
         public override IMapToSimulatedRequest Map(JArray rows)

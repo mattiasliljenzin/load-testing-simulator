@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace RequestSimulation.Executing.Interceptors
@@ -9,25 +7,20 @@ namespace RequestSimulation.Executing.Interceptors
     public class AuthorizationInterceptor : IHttpRequestMessageInterceptor
     {
         private readonly ITokenStore _store;
-        private IDictionary<string, Func<AuthenticationHeaderValue>> _tokens = null;
 
         public AuthorizationInterceptor(ITokenStore store)
         {
             _store = store;
         }
 
-        public async Task InterceptAsync(HttpRequestMessage message)
+        public void InterceptAsync(HttpRequestMessage message)
         {
             var host = message.RequestUri.Host.ToLower();
+            var tokens = _store.GetAll();
 
-            if (_tokens == null)
+            if (tokens.ContainsKey(host))
             {
-                _tokens = await _store.GetAll();
-            }
-
-            if (_tokens.ContainsKey(host))
-            {
-                var tokenFactory = _tokens[host];
+                var tokenFactory = tokens[host];
                 message.Headers.Authorization = tokenFactory();
             }
         }

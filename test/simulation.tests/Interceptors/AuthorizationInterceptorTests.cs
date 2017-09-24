@@ -19,7 +19,7 @@ namespace simulation.tests.Interceptors
         [InlineData("http://www.google.com/api/search?q=test",   "Bearer 1231231231231231231231231231231231231231231231231231231231231231")]
 		[InlineData("http://www.yahoo.com/api/search?q=test", "Bearer 1111111111111111111111111111111111111111111111111111111111111111")]
 		[InlineData("http://www.facebook.com/api/search?q=test", "Bearer 1234567890123456789012345678901234567890123456789012345678901234")]
-        public async Task Should_intercept_as_expected(string input, string expected)
+        public void Should_intercept_as_expected(string input, string expected)
         {
             // Arrange
             var store = CreateMockedTokenStore();
@@ -27,7 +27,7 @@ namespace simulation.tests.Interceptors
             var message = new HttpRequestMessage(HttpMethod.Get, new Uri(input));
 
             // Act
-            await interceptor.InterceptAsync(message);
+            interceptor.InterceptAsync(message);
 
             // Assert
             message.Headers.Authorization.Scheme.ShouldBe(expected.Split(' ')[0]);

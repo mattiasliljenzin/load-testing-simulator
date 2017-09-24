@@ -8,11 +8,11 @@ using Newtonsoft.Json;
 
 namespace RequestSimulation.Executing.Interceptors
 {
-    public class TokenStore : ITokenStore
+    public class TokenStore : ITokenStore, INeedInitialization
     {
         private readonly IConfiguration _configuration;
         private readonly IContentClient _client;
-        private readonly IDictionary<string, Func<AuthenticationHeaderValue>> _tokenFactory = new Dictionary<string, Func<AuthenticationHeaderValue>>();
+        private static readonly IDictionary<string, Func<AuthenticationHeaderValue>> TokenFactory = new Dictionary<string, Func<AuthenticationHeaderValue>>();
 
         public TokenStore(IConfiguration configuration, IContentClient client)
         {
@@ -20,12 +20,14 @@ namespace RequestSimulation.Executing.Interceptors
             _client = client;
         }
 
-        public async Task<IDictionary<string, Func<AuthenticationHeaderValue>>> GetAll()
+        public IDictionary<string, Func<AuthenticationHeaderValue>> GetAll()
         {
-            if (_tokenFactory.Any())
-            {
-                return _tokenFactory;
-            }
+            return TokenFactory;
+        }
+
+        public async Task Initialize()
+        {
+            Console.WriteLine("[INeedInitialization]: TokenStore");
 
             try
             {
@@ -35,10 +37,8 @@ namespace RequestSimulation.Executing.Interceptors
                 foreach (var token in tokens)
                 {
                     var uri = new Uri(token.Host);
-                    _tokenFactory.Add(uri.Host, () => new AuthenticationHeaderValue(TokenStoreScheme, token.Token));
+                    TokenFactory.Add(uri.Host, () => new AuthenticationHeaderValue(TokenStoreScheme, token.Token));
                 }
-
-                return _tokenFactory;
             }
             catch (Exception ex)
             {

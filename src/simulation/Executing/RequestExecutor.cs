@@ -27,16 +27,16 @@ namespace RequestSimulation.Executing
                 var message = new HttpRequestMessage(HttpMethod.Get, request.Uri);
                 foreach (var interceptor in _interceptors)
                 {
-                    await interceptor.InterceptAsync(message);
+                    interceptor.InterceptAsync(message);
                 }
 
                 Console.WriteLine($"Executing: {message.RequestUri}");
                 var timer = new Stopwatch();
                 timer.Start();
 
-                //var response = await _client.SendAsync(message);
+                var response = await _client.SendAsync(message);
 
-                await Task.Delay(random.Next(100, 1000));
+                //await Task.Delay(random.Next(100, 1000));
 
                 timer.Stop();
 

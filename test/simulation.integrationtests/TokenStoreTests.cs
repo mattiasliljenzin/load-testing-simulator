@@ -18,9 +18,10 @@ namespace simulation.integrationtests
             var expected = 15; // set this to corresponding test data
             var client = new FileContentClient();
             var store = new TokenStore(_configuration, client);
+            await store.Initialize();
 
             // Act
-            var tokens = await store.GetAll();
+            var tokens = store.GetAll();
 
             // Assert
             tokens.Count.ShouldBe(expected);

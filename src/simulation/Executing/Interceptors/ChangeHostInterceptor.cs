@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace RequestSimulation.Executing.Interceptors
@@ -14,19 +13,15 @@ namespace RequestSimulation.Executing.Interceptors
             _configuration = configuration;
         }
 
-        public Task InterceptAsync(HttpRequestMessage message)
+        public void InterceptAsync(HttpRequestMessage message)
         {
             var messageRequestUri = message.RequestUri;
             var host = _configuration[$"Interceptors:ChangeHost:{messageRequestUri.Host}"];
 
-            if (string.IsNullOrWhiteSpace(host)) 
-            { 
-                return Task.CompletedTask; 
+            if (string.IsNullOrWhiteSpace(host) == false)
+            {
+                message.RequestUri = new Uri($"{messageRequestUri.Scheme}://{host}{messageRequestUri.PathAndQuery}");
             }
-
-            message.RequestUri = new Uri($"{messageRequestUri.Scheme}://{host}{messageRequestUri.PathAndQuery}");
-
-            return Task.CompletedTask;
         }
     }
 }
