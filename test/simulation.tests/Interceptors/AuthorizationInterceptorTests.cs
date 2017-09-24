@@ -11,18 +11,20 @@ using Xunit;
 
 namespace simulation.tests.Interceptors
 {
-    public class ChangeHostInterceptorTest
+    public class AuthorizationInterceptorTest
     {
         private readonly IConfiguration _configuration;
 
-        public ChangeHostInterceptorTest()
+        public AuthorizationInterceptorTest()
         {
             _configuration = Substitute.For<IConfiguration>();
-            _configuration["Interceptors:ChangeHost:www.google.com"].Returns("www.yahoo.com");
+            _configuration["Interceptors:Autho:www.google.com"].Returns("www.yahoo.com");
         }
 
         [Theory]
-        [InlineData("http://www.google.com/api/search?q=test", "http://www.yahoo.com/api/search?q=test")]
+        [InlineData("http://www.google.com/api/search?q=test",   "1231231231231231231231231231231231231231231231231231231231231231")]
+		[InlineData("http://www.yahoo.com/api/search?q=test",    "1111111111111111111111111111111111111111111111111111111111111111")]
+		[InlineData("http://www.facebook.com/api/search?q=test", "1234567890123456789012345678901234567890123456789012345678901234")]
         public void Should_intercept_as_expected(string input, string expected)
         {
             // Arrange
