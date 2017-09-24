@@ -16,8 +16,8 @@ namespace RequestSimulation
     {
         public async Task Run()
         {
-            var from = DateTime.UtcNow.AddMinutes(-10);
-            var to = DateTime.UtcNow;
+            var from = new DateTime(2017, 09, 20, 13, 00, 00);
+            var to = from.AddHours(1);
 
             Console.WriteLine(" ");
             Console.WriteLine($"Start:\t {from.ToString()} (UTC)");
@@ -44,6 +44,8 @@ namespace RequestSimulation
             builder.RegisterType<ApplicationInsightsDependencyDataSource>().As<IRequestDataSource>();
             builder.RegisterType<RequestExecutor>().As<IRequestExecutor>();
             builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.5);
+            builder.RegisterType<TokenStore>().As<ITokenStore>();
+            builder.RegisterType<FileContentClient>().As<IContentClient>();
             builder.RegisterType<ApplicationInsightsConfiguration>();
             builder.RegisterType<Simulation>();
             builder.RegisterType<RequestDelegator>();
