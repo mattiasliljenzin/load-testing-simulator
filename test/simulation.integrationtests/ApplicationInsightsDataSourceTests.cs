@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using NSubstitute;
 using RequestSimulation.Configuration;
 using RequestSimulation.Datasources;
 using RequestSimulation.Requests;
@@ -14,14 +13,7 @@ namespace simulation.integrationtests
 {
     public class ApplicationInsightsDataSourceTests
     {
-        private readonly IConfiguration _configuration;
-
-        public ApplicationInsightsDataSourceTests()
-        {
-            _configuration = Substitute.For<IConfiguration>();
-            _configuration["AppId"].Returns("DEMO_APP");
-            _configuration["AppKey"].Returns("DEMO_KEY");
-        }
+        private readonly IConfiguration _configuration = TestUtilities.BuildConfiguration();
 
         [Fact]
         public async Task Should_map_result_When_retrieving_requests()
@@ -36,7 +28,7 @@ namespace simulation.integrationtests
             AssertResult(result);
         }
 
-        [Fact]
+        [Fact] // This will fail with DEMO_APP since there is no host in that data, but work with your data
         public async Task Should_map_result_When_retrieving_dependencies()
         {
             // Arrange

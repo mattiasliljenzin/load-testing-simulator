@@ -15,14 +15,6 @@ namespace simulation.tests.Interceptors
 {
     public class AuthorizationInterceptorTest
     {
-        private readonly IConfiguration _configuration;
-
-        public AuthorizationInterceptorTest()
-        {
-            _configuration = Substitute.For<IConfiguration>();
-            _configuration["Interceptors:Autho:www.google.com"].Returns("www.yahoo.com");
-        }
-
         [Theory]
         [InlineData("http://www.google.com/api/search?q=test",   "Bearer 1231231231231231231231231231231231231231231231231231231231231231")]
 		[InlineData("http://www.yahoo.com/api/search?q=test", "Bearer 1111111111111111111111111111111111111111111111111111111111111111")]
