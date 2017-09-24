@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ namespace RequestSimulation.Executing
                 var message = new HttpRequestMessage(HttpMethod.Get, request.Uri);
                 foreach (var interceptor in _interceptors)
                 {
-                    interceptor.Intercept(message);
+                    await interceptor.InterceptAsync(message);
                 }
 
                 Console.WriteLine($"Executing: {message.RequestUri}");
