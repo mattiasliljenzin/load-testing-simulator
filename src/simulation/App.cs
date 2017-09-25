@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Extensions.Configuration;
@@ -19,8 +17,8 @@ namespace RequestSimulation
     {
         public async Task Run()
         {
-            var from = new DateTime(2017, 09, 19, 10, 00, 00, DateTimeKind.Utc);
-            var to = from.AddHours(1);
+            var from = DateTime.UtcNow.AddMinutes(-5);
+            var to = DateTime.UtcNow;
 
             Console.WriteLine(" ");
             Console.WriteLine($"Start:\t {from.ToString()} (UTC)");
@@ -37,6 +35,7 @@ namespace RequestSimulation
 
             Console.WriteLine("[App]: Press any key to start simulation...");
             Console.ReadKey();
+            Console.WriteLine(" ");
 
             var simulator = container.Resolve<Simulation>();
             simulator.Subscribe(delegator);
@@ -49,21 +48,23 @@ namespace RequestSimulation
             var builder = new ContainerBuilder();
             builder.Register(_ => BuildConfiguration()).As<IConfiguration>();
 
-            builder.RegisterType<AuthorizationInterceptor>().As<IHttpRequestMessageInterceptor>();
             builder.RegisterType<ChangeHostInterceptor>().As<IHttpRequestMessageInterceptor>();
+            builder.RegisterType<AuthorizationInterceptor>().As<IHttpRequestMessageInterceptor>();
 
             builder.RegisterType<TokenStore>().As<INeedInitialization>().SingleInstance();
             builder.RegisterType<TokenStore>().As<ITokenStore>().SingleInstance();
 
             builder.RegisterType<RequestExecutor>().As<IRequestExecutor>();
-            builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.5);
             builder.RegisterType<ApplicationInsightsConfiguration>().SingleInstance();
             builder.RegisterType<Simulation>().SingleInstance();
             builder.RegisterType<RequestDelegator>().SingleInstance();
 
+            builder.Register(x => new ConstantLoadStrategy(100)).As<ILoadStrategy>();
+            //builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.5);
+
             builder.RegisterType<FileContentClient>().As<IContentClient>();
-            builder.RegisterType<ApplicationInsightsRequestDataSource>().As<IRequestDataSource>();
-            //builder.RegisterType<ApplicationInsightsDependencyDataSource>().As<IRequestDataSource>();
+            //builder.RegisterType<ApplicationInsightsRequestDataSource>().As<IRequestDataSource>();
+            builder.RegisterType<ApplicationInsightsDependencyDataSource>().As<IRequestDataSource>();
 
             return builder.Build();
         }

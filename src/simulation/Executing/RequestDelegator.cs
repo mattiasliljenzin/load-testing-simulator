@@ -41,7 +41,7 @@ namespace RequestSimulation.Executing
                 Count = x.Count()
             });
 
-            var requestTable = new ConsoleTable("url", "count");
+            var requestTable = new ConsoleTable($"top {Constants.DEFAULT_PRINT_TOP_REQUEST_COUNT} urls ({list.Count} total)", "count");
             foreach (var request in requests.OrderByDescending(x => x.Count).Take(Constants.DEFAULT_PRINT_TOP_REQUEST_COUNT))
             {
                 requestTable.AddRow(request.Url, request.Count);

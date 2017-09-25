@@ -44,10 +44,20 @@ namespace RequestSimulation.Executing
                 {
                     Elapsed = timer.ElapsedMilliseconds,
                     Endpoint = message.RequestUri.Host,
-                    StatusCode = 200, //(int) response.StatusCode,
-                    Url = message.RequestUri.ToString(),
+                    StatusCode = (int) response.StatusCode,
+                    Url = GetFormattedUrl(message),
                     SimulatedDate = request.Created.Normalize()
                 };
+
+                if (response.IsSuccessStatusCode == false)
+                {
+                    request.Uri = message.RequestUri;
+                    var content = await response.Content.ReadAsStringAsync();
+                    var statusCode = (int) response.StatusCode;
+                    var exception = new HttpRequestException($"Status code: {statusCode}. Reason: {response.ReasonPhrase}. Content: {content}");
+
+                    SimulationTelemetry.Instance.AddException(request, exception);
+                }
 
                 SimulationTelemetry.Instance.Add(metric);
             }
@@ -55,6 +65,13 @@ namespace RequestSimulation.Executing
             {
                 SimulationTelemetry.Instance.AddException(request, ex);
             }
+        }
+
+        private static string GetFormattedUrl(HttpRequestMessage message)
+        {
+            var url = message.RequestUri.ToString();
+
+            return url.Length < 125 ? url : url.Substring(0, 125);
         }
     }
 }

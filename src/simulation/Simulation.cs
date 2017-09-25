@@ -12,10 +12,11 @@ namespace RequestSimulation
     {
         private long _counter;
         private DateTime _simulatedStartDate;
-		private DateTime _simulatedEndDate;
+        private DateTime _simulatedEndDate;
         private DateTime _simulationStartedDate;
-		private bool _simulationComplete;
-		private Timer _timer;
+        private TimeSpan _timeToElapse;
+        private bool _simulationComplete;
+        private Timer _timer;
 
         private readonly List<ISimulationSubscriber> _subscribers = new List<ISimulationSubscriber>();
         private readonly ILoadStrategy _loadStrategy;
@@ -30,19 +31,20 @@ namespace RequestSimulation
             _simulatedStartDate = simulatedStartDate;
             _simulatedEndDate = simulatedEndDate;
             _simulationStartedDate = DateTime.UtcNow;
+            _timeToElapse = _simulatedEndDate.Subtract(_simulatedStartDate);
 
-            _timer = new Timer(_loadStrategy.InitialInterval) {AutoReset = true};
+            _timer = new Timer(_loadStrategy.InitialInterval) { AutoReset = true };
             _timer.Elapsed += Elapsed;
             _timer.Start();
 
-			Console.WriteLine($"[Simulation]: Started!");
+            Console.WriteLine($"[Simulation]: Started!");
             Console.WriteLine($"[Simulation]: Load strategy: {_loadStrategy.GetType().Name}!");
 
 
             while (_simulationComplete == false)
             {
                 // wait for it..
-            } 
+            }
         }
 
         public void SetLoadStrategyEffectRate(double alpha)
@@ -56,20 +58,20 @@ namespace RequestSimulation
             PrintReport();
         }
 
-        private void PrintReport () 
+        private void PrintReport()
         {
-			var elapsed = DateTime.UtcNow.Subtract(_simulationStartedDate);
-			Console.WriteLine($"[Simulation]: Stopped!");
-			Console.WriteLine($"[Simulation]: Duration was {Math.Ceiling(elapsed.TotalSeconds)} seconds ({_counter} simulated)");
-			Console.WriteLine($"[Simulation]: Average simulation speed was {Math.Ceiling(_counter / elapsed.TotalSeconds)}X");
+            var elapsed = DateTime.UtcNow.Subtract(_simulationStartedDate);
+            Console.WriteLine($"[Simulation]: Stopped!");
+            Console.WriteLine($"[Simulation]: Duration was {Math.Ceiling(elapsed.TotalSeconds)} seconds ({_counter} simulated)");
+            Console.WriteLine($"[Simulation]: Average simulation speed was {Math.Ceiling(_counter / elapsed.TotalSeconds)}X");
             Console.WriteLine($"[Simulation]: Requests executed: {SimulationTelemetry.Instance.RequestCount}");
-			Console.WriteLine($"[Simulation]: Request rate was: {SimulationTelemetry.Instance.RequestCount / elapsed.Seconds}/s");
-			Console.WriteLine($"[Simulation]: Actual request rate was: {SimulationTelemetry.Instance.RequestCount / _counter}");
-			Console.WriteLine(" ");
-			Console.WriteLine(" ");
-			Console.WriteLine("=== Simulation Report ===");
+            Console.WriteLine($"[Simulation]: Request rate was: {SimulationTelemetry.Instance.RequestCount / elapsed.Seconds}/s");
+            Console.WriteLine($"[Simulation]: Actual request rate was: {SimulationTelemetry.Instance.RequestCount / _counter}");
             Console.WriteLine(" ");
-			SimulationTelemetry.Instance.PrintReport();
+            Console.WriteLine(" ");
+            Console.WriteLine("=== Simulation Report ===");
+            Console.WriteLine(" ");
+            SimulationTelemetry.Instance.PrintReport();
         }
 
         private void Elapsed(object sender, ElapsedEventArgs e)
@@ -81,7 +83,7 @@ namespace RequestSimulation
                 Stop();
                 SetCompleted();
                 return;
-			}
+            }
 
             //LogTick(simulatedDate);
             LogProgress(simulatedDate);
@@ -101,10 +103,14 @@ namespace RequestSimulation
             var elapsed = simulatedDate.Subtract(_simulatedStartDate);
             var total = _simulatedEndDate.Subtract(_simulatedStartDate);
             var progress = elapsed / total;
-
-            Console.WriteLine(" ");
-            Console.WriteLine($"PROGRESS: {progress:P}%");
-            Console.WriteLine(" ");
+            var step = (int) (_timeToElapse.TotalSeconds / 100);
+            
+            if (_counter % step == 0)
+            {
+                Console.WriteLine(" ");
+                Console.WriteLine($"PROGRESS: {progress:P}%");
+                Console.WriteLine(" ");
+            }
 
             SimulationTelemetry.Instance.Add(new SimulationSnapshot
             {
@@ -146,5 +152,5 @@ namespace RequestSimulation
             Console.WriteLine($"[Simulation]: Adding subscriber: {subscriber.GetType().Name}");
             _subscribers.Add(subscriber);
         }
-	}
+    }
 }
