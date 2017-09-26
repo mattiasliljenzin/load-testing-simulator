@@ -9,6 +9,6 @@ namespace RequestSimulation.Statistics
         public double Progress { get; set; }
         public DateTime SimulatedDate { get; set; }
         public DateTime TimeStamp { get; set; }
-        public List<RequestData> Requests { get; set; }
+        public List<RequestRecording> Requests { get; set; }
     }
 }

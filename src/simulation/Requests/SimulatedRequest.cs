@@ -20,16 +20,6 @@ namespace RequestSimulation.Requests
             };
         }
 
-		public static ISimulatedRequest Create(Uri uri, string method, DateTime created)
-		{
-			return new SimulatedRequest
-			{
-				Uri = uri,
-				Method = method,
-				Created = created
-			};
-		}
-
         public static ISimulatedRequest Create(IMapToSimulatedRequest request, string method = "GET")
         {
             try

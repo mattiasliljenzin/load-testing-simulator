@@ -10,6 +10,8 @@ using RequestSimulation.Datasources;
 using RequestSimulation.Executing;
 using RequestSimulation.Executing.Interceptors;
 using RequestSimulation.Loadstrategies;
+using RequestSimulation.Statistics;
+using RequestSimulation.Storage;
 
 namespace RequestSimulation
 {
@@ -17,8 +19,8 @@ namespace RequestSimulation
     {
         public async Task Run()
         {
-            var from = DateTime.UtcNow.AddMinutes(-5);
-            var to = DateTime.UtcNow;
+            var from = new DateTime(2017, 09, 25, 11, 30, 00, DateTimeKind.Utc);
+            var to = from.AddMinutes(60);
 
             Console.WriteLine(" ");
             Console.WriteLine($"Start:\t {from.ToString()} (UTC)");
@@ -41,6 +43,12 @@ namespace RequestSimulation
             simulator.Subscribe(delegator);
             simulator.SetLoadStrategyEffectRate(1.0);
             simulator.RunSimulation(from, to);
+
+            Console.WriteLine("[App]: Waiting 10.000 ms for any request to finish");
+            await Task.Delay(10000);
+
+            var storage = container.Resolve<ISimulationResultStorage>();
+            await storage.Save(SimulationTelemetry.Instance.GetRequestData().ToList());
         }
 
         private IContainer InitializeComponents()
@@ -48,7 +56,7 @@ namespace RequestSimulation
             var builder = new ContainerBuilder();
             builder.Register(_ => BuildConfiguration()).As<IConfiguration>();
 
-            builder.RegisterType<ChangeHostInterceptor>().As<IHttpRequestMessageInterceptor>();
+            //builder.RegisterType<ChangeHostInterceptor>().As<IHttpRequestMessageInterceptor>();
             builder.RegisterType<AuthorizationInterceptor>().As<IHttpRequestMessageInterceptor>();
 
             builder.RegisterType<TokenStore>().As<INeedInitialization>().SingleInstance();
@@ -58,9 +66,10 @@ namespace RequestSimulation
             builder.RegisterType<ApplicationInsightsConfiguration>().SingleInstance();
             builder.RegisterType<Simulation>().SingleInstance();
             builder.RegisterType<RequestDelegator>().SingleInstance();
+            builder.RegisterType<SqlSimulationResultStorage>().As<ISimulationResultStorage>();
 
-            builder.Register(x => new ConstantLoadStrategy(100)).As<ILoadStrategy>();
-            //builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.5);
+            builder.Register(x => new ConstantLoadStrategy(50)).As<ILoadStrategy>();
+            //builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.1);
 
             builder.RegisterType<FileContentClient>().As<IContentClient>();
             //builder.RegisterType<ApplicationInsightsRequestDataSource>().As<IRequestDataSource>();

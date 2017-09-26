@@ -1,6 +1,9 @@
 ﻿{
     "AppId": "DEMO_APP",
     "AppKey": "DEMO_KEY",
+    "ConnectionStrings": {
+        "SQL": "Data Source=localhost;Initial Catalog=simulation-results;Application Name=simulation;Integrated Security=True"
+    },
     "Interceptors": {
         "ChangeHost": {
             "google.se": "localhost:8181"

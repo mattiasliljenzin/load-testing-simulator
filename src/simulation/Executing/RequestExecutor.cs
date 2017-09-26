@@ -13,7 +13,7 @@ namespace RequestSimulation.Executing
     {
         private readonly IHttpRequestMessageInterceptor[] _interceptors;
         private readonly HttpClient _client = new HttpClient();
-        private Random random = new Random();
+        private static readonly Guid BatchId = Guid.NewGuid();
 
         public RequestExecutor(IHttpRequestMessageInterceptor[] interceptors)
         {
@@ -31,32 +31,27 @@ namespace RequestSimulation.Executing
                 }
 
                 Console.WriteLine($"Executing: {message.RequestUri}");
+
                 var timer = new Stopwatch();
                 timer.Start();
 
                 var response = await _client.SendAsync(message);
 
-                //await Task.Delay(random.Next(100, 1000));
-
                 timer.Stop();
 
-                var metric = new RequestData
+                var metric = new RequestRecording
                 {
                     Elapsed = timer.ElapsedMilliseconds,
                     Endpoint = message.RequestUri.Host,
                     StatusCode = (int) response.StatusCode,
                     Url = GetFormattedUrl(message),
-                    SimulatedDate = request.Created.Normalize()
+                    SimulatedDate = request.Created.Normalize(),
+                    BatchId = BatchId
                 };
 
                 if (response.IsSuccessStatusCode == false)
                 {
-                    request.Uri = message.RequestUri;
-                    var content = await response.Content.ReadAsStringAsync();
-                    var statusCode = (int) response.StatusCode;
-                    var exception = new HttpRequestException($"Status code: {statusCode}. Reason: {response.ReasonPhrase}. Content: {content}");
-
-                    SimulationTelemetry.Instance.AddException(request, exception);
+                    await HandleUnSuccessfulResponse(request, message, response);
                 }
 
                 SimulationTelemetry.Instance.Add(metric);
@@ -65,6 +60,17 @@ namespace RequestSimulation.Executing
             {
                 SimulationTelemetry.Instance.AddException(request, ex);
             }
+        }
+
+        private static async Task HandleUnSuccessfulResponse(ISimulatedRequest request, HttpRequestMessage message,
+            HttpResponseMessage response)
+        {
+            request.Uri = message.RequestUri;
+            var content = await response.Content.ReadAsStringAsync();
+            var statusCode = (int) response.StatusCode;
+            var exception = new HttpRequestException($"Status code: {statusCode}. Reason: {response.ReasonPhrase}. Content: {content}");
+
+            SimulationTelemetry.Instance.AddException(request, exception);
         }
 
         private static string GetFormattedUrl(HttpRequestMessage message)

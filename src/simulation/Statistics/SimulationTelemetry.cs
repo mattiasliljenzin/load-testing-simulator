@@ -10,13 +10,13 @@ namespace RequestSimulation.Statistics
 {
     public class SimulationTelemetry
     {
-        private static readonly List<RequestData> Data = new List<RequestData>();
+        private static readonly List<RequestRecording> Data = new List<RequestRecording>();
         private static readonly List<string> Exceptions = new List<string>();
         private static readonly List<SimulationSnapshot> Snapshots = new List<SimulationSnapshot>();
 
-        public void Add(RequestData data)
+        public void Add(RequestRecording recording)
         {
-            Data.Add(data);
+            Data.Add(recording);
         }
 
         public void Add(SimulationSnapshot snapshot)
@@ -32,7 +32,7 @@ namespace RequestSimulation.Statistics
             PrintReport(Data, original, noOutliers, Exceptions, Snapshots);
         }
 
-        private void PrintReport(List<RequestData> requests, List<double> original, IList<double> withoutOutliers, List<string> exceptions, List<SimulationSnapshot> snapshots)
+        private void PrintReport(List<RequestRecording> requests, List<double> original, IList<double> withoutOutliers, List<string> exceptions, List<SimulationSnapshot> snapshots)
         {
             PrintSimulationSnapshots(snapshots, requests);
             PrintStatisticsTable(original, withoutOutliers);
@@ -54,7 +54,7 @@ namespace RequestSimulation.Statistics
             table.Write(Format.MarkDown);
         }
 
-        private static void PrintStatusCodeTable(List<RequestData> requests)
+        private static void PrintStatusCodeTable(List<RequestRecording> requests)
         {
             var statusCodeStats = requests.OrderBy(x => x.StatusCode)
                 .GroupBy(x => x.StatusCode)
@@ -74,11 +74,11 @@ namespace RequestSimulation.Statistics
             statusCodeTable.Write(Format.MarkDown);
         }
 
-        private static void PrintSimulationSnapshots(List<SimulationSnapshot> snapshots, List<RequestData> requests)
+        private static void PrintSimulationSnapshots(List<SimulationSnapshot> snapshots, List<RequestRecording> requests)
         {
             EnrichSnapshotsWithRequests(snapshots, requests);
 
-            var buckets = 10;
+            var buckets = Constants.DEFAULT_REPORT_BUCKET_SIZE;
             var snapshotsCount = snapshots.Count;
             var bucketSize = (int)Math.Floor((double)snapshotsCount / buckets);
             var duration = snapshots.Max(x => x.TimeStamp).Subtract(snapshots.Min(x => x.TimeStamp)).TotalSeconds;
@@ -114,15 +114,15 @@ namespace RequestSimulation.Statistics
             table.Write(Format.MarkDown);
         }
 
-        private static void EnrichSnapshotsWithRequests(List<SimulationSnapshot> snapshots, List<RequestData> requests)
+        private static void EnrichSnapshotsWithRequests(List<SimulationSnapshot> snapshots, List<RequestRecording> requests)
         {
-            var requestsDictionary = new Dictionary<DateTime, List<RequestData>>();
+            var requestsDictionary = new Dictionary<DateTime, List<RequestRecording>>();
 
             foreach (var request in requests)
             {
                 if (!requestsDictionary.ContainsKey(request.SimulatedDate))
                 {
-                    requestsDictionary.Add(request.SimulatedDate, new List<RequestData>());
+                    requestsDictionary.Add(request.SimulatedDate, new List<RequestRecording>());
                 }
                 requestsDictionary[request.SimulatedDate].Add(request);
             }
@@ -131,7 +131,7 @@ namespace RequestSimulation.Statistics
             {
                 snapshot.Requests = requestsDictionary.ContainsKey(snapshot.SimulatedDate)
                     ? requestsDictionary[snapshot.SimulatedDate]
-                    : new List<RequestData>(0);
+                    : new List<RequestRecording>(0);
             }
         }
 
@@ -152,7 +152,7 @@ namespace RequestSimulation.Statistics
             Exceptions.Add($"{request.Uri} - {ex.Message}");
         }
 
-        private static void PrintUrlTableByUrlFrequency(List<RequestData> requests)
+        private static void PrintUrlTableByUrlFrequency(List<RequestRecording> requests)
         {
             var urls = requests
                 .GroupBy(x => x.Url)
@@ -169,7 +169,7 @@ namespace RequestSimulation.Statistics
             PrintUrlTable("request count by url", urls);
         }
 
-        private static void PrintUrlTableByEndpointFrequency(List<RequestData> requests)
+        private static void PrintUrlTableByEndpointFrequency(List<RequestRecording> requests)
         {
             var urls = requests
                 .GroupBy(x => x.Endpoint)
@@ -186,7 +186,7 @@ namespace RequestSimulation.Statistics
             PrintUrlTable("request count by endpoint", urls);
         }
 
-        private static void PrintUrlTableByUrlPerformance(List<RequestData> requests)
+        private static void PrintUrlTableByUrlPerformance(List<RequestRecording> requests)
         {
             var urls = requests
                 .OrderByDescending(x => x.Elapsed)
@@ -202,7 +202,7 @@ namespace RequestSimulation.Statistics
             PrintUrlTable("performance by url", urls);
         }
 
-        private static void PrintUrlTableByEndpointPerformance(List<RequestData> requests)
+        private static void PrintUrlTableByEndpointPerformance(List<RequestRecording> requests)
         {
             var urls = requests
                 .OrderByDescending(x => x.Elapsed)
@@ -247,6 +247,8 @@ namespace RequestSimulation.Statistics
 
 
         public long RequestCount => Data.Count;
+
+        public IList<RequestRecording> GetRequestData() => Data;
 
         public static SimulationTelemetry Instance { get; } = new SimulationTelemetry();
     }

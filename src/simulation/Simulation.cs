@@ -60,18 +60,25 @@ namespace RequestSimulation
 
         private void PrintReport()
         {
-            var elapsed = DateTime.UtcNow.Subtract(_simulationStartedDate);
-            Console.WriteLine($"[Simulation]: Stopped!");
-            Console.WriteLine($"[Simulation]: Duration was {Math.Ceiling(elapsed.TotalSeconds)} seconds ({_counter} simulated)");
-            Console.WriteLine($"[Simulation]: Average simulation speed was {Math.Ceiling(_counter / elapsed.TotalSeconds)}X");
-            Console.WriteLine($"[Simulation]: Requests executed: {SimulationTelemetry.Instance.RequestCount}");
-            Console.WriteLine($"[Simulation]: Request rate was: {SimulationTelemetry.Instance.RequestCount / elapsed.Seconds}/s");
-            Console.WriteLine($"[Simulation]: Actual request rate was: {SimulationTelemetry.Instance.RequestCount / _counter}");
-            Console.WriteLine(" ");
-            Console.WriteLine(" ");
-            Console.WriteLine("=== Simulation Report ===");
-            Console.WriteLine(" ");
-            SimulationTelemetry.Instance.PrintReport();
+            try
+            {
+                var elapsed = DateTime.UtcNow.Subtract(_simulationStartedDate);
+                Console.WriteLine($"[Simulation]: Stopped!");
+                Console.WriteLine($"[Simulation]: Duration was {Math.Ceiling(elapsed.TotalSeconds)} seconds ({_counter} simulated)");
+                Console.WriteLine($"[Simulation]: Average simulation speed was {Math.Ceiling(_counter / elapsed.TotalSeconds)}X");
+                Console.WriteLine($"[Simulation]: Requests executed: {SimulationTelemetry.Instance.RequestCount}");
+                Console.WriteLine($"[Simulation]: Request rate was: {SimulationTelemetry.Instance.RequestCount / elapsed.Seconds}/s");
+                Console.WriteLine($"[Simulation]: Actual request rate was: {SimulationTelemetry.Instance.RequestCount / _counter}");
+                Console.WriteLine(" ");
+                Console.WriteLine(" ");
+                Console.WriteLine("=== Simulation Report ===");
+                Console.WriteLine(" ");
+                SimulationTelemetry.Instance.PrintReport();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[Simulation]: Something bad occurred during report printout! Exception: " + ex.ToString());
+            }
         }
 
         private void Elapsed(object sender, ElapsedEventArgs e)
