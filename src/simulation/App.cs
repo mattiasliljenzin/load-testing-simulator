@@ -12,6 +12,8 @@ using RequestSimulation.Executing.Interceptors;
 using RequestSimulation.Loadstrategies;
 using RequestSimulation.Statistics;
 using RequestSimulation.Storage;
+using RequestSimulation.Storage.ApplicationInsights;
+using RequestSimulation.Storage.Sql;
 
 namespace RequestSimulation
 {
@@ -19,7 +21,7 @@ namespace RequestSimulation
     {
         public async Task Run()
         {
-            var from = new DateTime(2017, 09, 25, 11, 30, 00, DateTimeKind.Utc);
+            var from = new DateTime(2017, 09, 28, 13, 00, 00, DateTimeKind.Utc);
             var to = from.AddMinutes(60);
 
             Console.WriteLine(" ");
@@ -47,8 +49,21 @@ namespace RequestSimulation
             Console.WriteLine("[App]: Waiting 10.000 ms for any request to finish");
             await Task.Delay(10000);
 
-            var storage = container.Resolve<ISimulationResultStorage>();
-            await storage.Save(SimulationTelemetry.Instance.GetRequestData().ToList());
+            var storages = container.Resolve<IEnumerable<ISimulationResultStorage>>();
+            foreach (var storage in storages)
+            {
+                try
+                {
+                    await storage.Save(SimulationTelemetry.Instance.GetRequestData().ToList());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[App]: Something went bad when trying to store result. Exception was: {ex.ToString()}");
+                }
+            }
+
+            
+            
         }
 
         private IContainer InitializeComponents()
@@ -67,13 +82,15 @@ namespace RequestSimulation
             builder.RegisterType<Simulation>().SingleInstance();
             builder.RegisterType<RequestDelegator>().SingleInstance();
             builder.RegisterType<SqlSimulationResultStorage>().As<ISimulationResultStorage>();
+            builder.RegisterType<ApplicationInsightsResultStorage>().As<ISimulationResultStorage>().PreserveExistingDefaults();
 
             builder.Register(x => new ConstantLoadStrategy(50)).As<ILoadStrategy>();
-            //builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.1);
+            //builder.RegisterType<LinearLoadStrategy>().As<ILoadStrategy>().WithParameter("slope", 1.5);
 
             builder.RegisterType<FileContentClient>().As<IContentClient>();
             //builder.RegisterType<ApplicationInsightsRequestDataSource>().As<IRequestDataSource>();
             builder.RegisterType<ApplicationInsightsDependencyDataSource>().As<IRequestDataSource>();
+            builder.RegisterType<ApplicationInsightsIngestion>().As<IApplicationInsightsIngestion>();
 
             return builder.Build();
         }

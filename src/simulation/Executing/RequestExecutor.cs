@@ -30,7 +30,7 @@ namespace RequestSimulation.Executing
                     interceptor.InterceptAsync(message);
                 }
 
-                Console.WriteLine($"Executing: {message.RequestUri}");
+                Console.WriteLine($"[RequestExecutor]: Executing: {message.RequestUri}");
 
                 var timer = new Stopwatch();
                 timer.Start();
@@ -46,7 +46,8 @@ namespace RequestSimulation.Executing
                     StatusCode = (int) response.StatusCode,
                     Url = GetFormattedUrl(message),
                     SimulatedDate = request.Created.Normalize(),
-                    BatchId = BatchId
+                    BatchId = BatchId,
+                    Timestamp = DateTime.UtcNow
                 };
 
                 if (response.IsSuccessStatusCode == false)

@@ -4,13 +4,25 @@
     "ConnectionStrings": {
         "SQL": "Data Source=localhost;Initial Catalog=simulation-results;Application Name=simulation;Integrated Security=True"
     },
+    "Packages": {
+        "ApplicationInsightsResultStorage": {
+            "StorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=account-name;AccountKey=account-key",
+            "ContainerName": "mycontainer",
+            "BlobName": "myblob",
+            "Ingestion": {
+                "IKey": "<instrumentation key>",
+                "SourceName": "<Schema ID>",
+                "BlobUrlWithSas": "<Blob URI with Shared Access Key>"
+            }
+        }
+    },
     "Interceptors": {
         "ChangeHost": {
             "google.se": "localhost:8181"
         },
         "TokenStore": {
             "Location": "https://www.google.com/api/tokens",
-            "Scheme": "Bearer" 
+            "Scheme": "Bearer"
         }
     }
 }

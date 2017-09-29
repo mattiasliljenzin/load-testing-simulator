@@ -14,6 +14,7 @@ namespace RequestSimulation.Datasources
         public override string BuildQuery(DateTime from, DateTime to)
         {
             var query = $@"dependencies 
+            | where target endswith "".azurewebsites.net"" 
             | where timestamp between (datetime({from}) .. datetime({to}))
             | where name startswith ""GET ""
             | order by timestamp asc";

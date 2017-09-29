@@ -7,6 +7,6 @@ namespace RequestSimulation.Storage
 {
     public interface ISimulationResultStorage
     {
-        Task Save(ICollection<RequestRecording> request);
+        Task Save(IEnumerable<RequestRecording> requests);
     }
 }

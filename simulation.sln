@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simulation", "src\simulation\simulation.csproj", "{D9265701-86D3-4807-8F3B-817A13A1BCDE}"
 EndProject
@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{73A55081
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simulation.tests", "test\simulation.tests\simulation.tests.csproj", "{4C8C0304-8205-482A-8DDA-9FC6FCCEB155}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simulation.integrationtests", "test\simulation.integrationtests\simulation.integrationtests.csproj", "{373CA5A1-1D6F-4026-AA45-2E32A972F9A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simulation.integrationtests", "test\simulation.integrationtests\simulation.integrationtests.csproj", "{373CA5A1-1D6F-4026-AA45-2E32A972F9A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

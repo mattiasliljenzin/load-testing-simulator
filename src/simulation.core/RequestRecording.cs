@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RequestSimulation.Statistics
+namespace simulation.core
 {
     [Serializable]
     public class RequestRecording
