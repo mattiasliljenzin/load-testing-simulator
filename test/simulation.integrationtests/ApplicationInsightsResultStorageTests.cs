@@ -20,7 +20,7 @@ namespace simulation.integrationtests
         {
             // Arrange
             var data = await GetDataFromSql();
-            var storage = new ApplicationInsightsResultStorage(_configuration);
+            var storage = new ApplicationInsightsResultStorage(_configuration, new ApplicationInsightsIngestion(_configuration));
 
             // Act
             await storage.Save(data.ToList());

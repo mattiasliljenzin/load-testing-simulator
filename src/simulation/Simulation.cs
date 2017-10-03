@@ -67,8 +67,8 @@ namespace RequestSimulation
                 Console.WriteLine($"[Simulation]: Duration was {Math.Ceiling(elapsed.TotalSeconds)} seconds ({_counter} simulated)");
                 Console.WriteLine($"[Simulation]: Average simulation speed was {Math.Ceiling(_counter / elapsed.TotalSeconds)}X");
                 Console.WriteLine($"[Simulation]: Requests executed: {SimulationTelemetry.Instance.RequestCount}");
-                Console.WriteLine($"[Simulation]: Request rate was: {SimulationTelemetry.Instance.RequestCount / elapsed.Seconds}/s");
-                Console.WriteLine($"[Simulation]: Actual request rate was: {SimulationTelemetry.Instance.RequestCount / _counter}");
+                Console.WriteLine($"[Simulation]: Request rate was: {SimulationTelemetry.Instance.RequestCount / elapsed.TotalSeconds}/s");
+                Console.WriteLine($"[Simulation]: Actual request rate was: {(double) SimulationTelemetry.Instance.RequestCount / _counter}/s");
                 Console.WriteLine(" ");
                 Console.WriteLine(" ");
                 Console.WriteLine("=== Simulation Report ===");
