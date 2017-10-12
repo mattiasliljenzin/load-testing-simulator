@@ -219,35 +219,3 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles/aw-candidateapi-web-app-stage-001 - Web Deploy.pubxml
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles/aw-candidateapi-web-app-stage-001 - Web Deploy-publish.ps1
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles/aw-candidateapi-web-app-dev-001 - Web Deploy (2).pubxml
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles/aw-candidateapi-web-app-dev-001 - Web Deploy (2)-publish.ps1
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles/aw-candidateapi-web-app-stage-001 - Web Deploy (2)-publish.ps1
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles/aw-candidateapi-web-app-stage-001 - Web Deploy (2).pubxml
-/Mail/AcademicWork.Mail.Api/Properties/PublishProfiles/aw-mailapi-web-app-dev-001 - Web Deploy (2)-publish.ps1
-/Mail/AcademicWork.Mail.Api/Properties/PublishProfiles/aw-mailapi-web-app-dev-001 - Web Deploy (2).pubxml
-/Client/AcademicWork.Client.Api/Properties/PublishProfiles/aw-clientapi-web-app-stage-001 - Web Deploy-publish.ps1
-/Client/AcademicWork.Client.Api/Properties/PublishProfiles/aw-clientapi-web-app-stage-001 - Web Deploy.pubxml
-/Candidate/AcademicWork.Candidate.Api/Repositories/Repository.cs
-/Candidate/AcademicWork.Candidate.Core/Interfaces/IRepository.cs
-/Job/AcademicWork.Job.Api/Properties/PublishProfiles/aw-jobapi-web-app-stage-001 - Web Deploy (4).pubxml
-/Job/AcademicWork.Job.Api/Properties/PublishProfiles/aw-jobapi-web-app-stage-001 - Web Deploy (4)-publish.ps1
-/Employee/AcademicWork.Employee.Api/Properties/PublishProfiles/aw-employeeapi-web-app-stage-001 - Web Deploy (4).pubxml
-/Employee/AcademicWork.Employee.Api/Properties/PublishProfiles/aw-employeeapi-web-app-stage-001 - Web Deploy (4)-publish.ps1
-/Employee/AcademicWork.Employee.Api/Properties/PublishProfiles/aw-employeeapi-web-app-prod-001 - Web Deploy (3).pubxml
-/Employee/AcademicWork.Employee.Api/Properties/PublishProfiles/aw-employeeapi-web-app-prod-001 - Web Deploy (3)-publish.ps1
-/Employee/AcademicWork.Employee.Api/Properties/PublishProfiles/aw-employeeapi-web-app-dev-001 - Web Deploy (2).pubxml
-/Employee/AcademicWork.Employee.Api/Properties/PublishProfiles/aw-employeeapi-web-app-dev-001 - Web Deploy (2)-publish.ps1
-/Client/AcademicWork.Client.Api/Properties/PublishProfiles/aw-clientapi-web-app-prod-001 - Web Deploy.pubxml
-/Client/AcademicWork.Client.Api/Properties/PublishProfiles/aw-clientapi-web-app-prod-001 - Web Deploy-publish.ps1
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles/aw-candidateapi-web-app-prod-001 - Web Deploy.pubxml
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles/aw-candidateapi-web-app-prod-001 - Web Deploy-publish.ps1
-/Candidate/AcademicWork.Candidate.Api/Properties/PublishProfiles
-/InstantUpdate/AcademicWork.InstantUpdate.Api/Properties/PublishProfiles
-/OrderManagementAPIS.ps1
-/Nps/AcademicWork.Nps.Api/Properties/launchSettings.json
-/cBookAPIS.ps1
-AcademicWork.Api.sln
-src/simulation/ai-dump.txt
-src/simulation/ai-dependency-dump.txt
